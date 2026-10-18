@@ -647,7 +647,7 @@ footer .footer-credits{font-size:.78rem;margin-top:1.5rem;opacity:.4}
       <div class="metric-card">
         <div class="metric-head"><span class="metric-icon">🏘️</span><span class="metric-title">Total de registros</span></div>
         <div class="metric-num-large" id="total-registros">0</div>
-        <div class="metric-sub">demandas sem PEV disponível registradas nesta sessão</div>
+        <div class="metric-sub">demandas sem PEV disponível registradas até agora</div>
       </div>
       <div class="metric-card">
         <div class="metric-head"><span class="metric-icon">📝</span><span class="metric-title">Participe da pesquisa</span></div>
@@ -706,6 +706,7 @@ footer .footer-credits{font-size:.78rem;margin-top:1.5rem;opacity:.4}
           <span class="photo-ico">📷</span>
           <span class="photo-txt">Tirar foto ou escolher da galeria</span>
           <small>JPG, PNG ou WebP · até 5 MB</small>
+          <small style="display:block;margin-top:.3rem">Evite fotografar pessoas, rostos e placas de veículos. A foto é vista só pela equipe da pesquisa.</small>
         </div>
         <div class="photo-preview" id="photo-preview" style="display:none">
           <img id="photo-img" alt="Pré-visualização da foto">
@@ -1047,7 +1048,25 @@ async function registrarDemanda(){
   if(st==='erro'){ showToast('⚠️ Não foi possível enviar agora. Tente de novo.'); return; }
   demandas++; demandaPorTipo[tipo]=(demandaPorTipo[tipo]||0)+1;
   $('dem-tipo').value=''; $('dem-bairro').value=''; $('dem-obs').value='';
-  updateStats(); if(window.comMap) carregarComunidade(); showToast(st==='ok'?'✅ Demanda registrada! Obrigado.':'✅ Registrada nesta sessão (banco ainda não conectado).');
+  updateStats(); if(window.comMap) carregarComunidade(); carregarContagens(); showToast(st==='ok'?'✅ Demanda registrada! Obrigado.':'✅ Registrada nesta sessão (banco ainda não conectado).');
+}
+function reduzirFoto(src){
+  return new Promise(function(res){
+    var img=new Image();
+    img.onload=function(){
+      var t=[[1000,.72],[800,.6],[640,.5]];
+      for(var i=0;i<t.length;i++){
+        var sc=Math.min(1,t[i][0]/Math.max(img.width,img.height));
+        var c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        var d=c.toDataURL('image/jpeg',t[i][1]);
+        if(d.length<=380000) return res(d);
+      }
+      res(null);
+    };
+    img.onerror=function(){ res(null); };
+    img.src=src;
+  });
 }
 function previewFoto(inp){
   var f=inp.files&&inp.files[0]; if(!f) return;
@@ -1071,7 +1090,9 @@ async function registrarDenuncia(){
   if(!tipo||!local){ showToast('⚠️ Preencha o tipo e o local'); return; }
   var foto=fotoDataUrl, vol=$('den-volume').value;
   var pt=await geocodar(local);
-  var st=await salvarRegistro('denuncias',{lat:pt?pt[0]:null,lng:pt?pt[1]:null,tipo:tipo,localizacao:local,volume:vol,descricao:$('den-desc').value.trim(),tem_foto:!!foto});
+  var fotoRed=foto?await reduzirFoto(foto):null;
+  if(foto&&!fotoRed) showToast('⚠️ Foto muito grande: a denúncia seguirá sem foto');
+  var st=await salvarRegistro('denuncias',{lat:pt?pt[0]:null,lng:pt?pt[1]:null,tipo:tipo,localizacao:local,volume:vol,descricao:$('den-desc').value.trim(),tem_foto:!!fotoRed,foto:fotoRed});
   if(st==='erro'){ showToast('⚠️ Não foi possível enviar agora. Tente de novo.'); return; }
   denuncias++;
   var item=document.createElement('div'); item.className='recent-item';
@@ -1081,7 +1102,7 @@ async function registrarDenuncia(){
   if(foto) item.querySelector('.recent-thumb').addEventListener('click',function(){ openFoto(foto); });
   $('recent-list').prepend(item);
   $('den-tipo').value=''; $('den-local').value=''; $('den-desc').value='';
-  removerFoto(); updateStats(); if(window.comMap) carregarComunidade(); showToast(st==='ok'?'🚨 Denúncia enviada! Obrigado.':'🚨 Registrada nesta sessão (banco ainda não conectado).');
+  removerFoto(); updateStats(); if(window.comMap) carregarComunidade(); carregarContagens(); showToast(st==='ok'?'🚨 Denúncia enviada! Obrigado.':'🚨 Registrada nesta sessão (banco ainda não conectado).');
 }
 
 /* ---------- pesquisa: consentimento, e-mail e banco de dados ---------- */
@@ -1119,6 +1140,19 @@ function renderMoveis(){
 document.addEventListener('DOMContentLoaded',function(){
   renderMoveis();
 });
+
+async function carregarContagens(){
+  if(!BACKEND.url||!BACKEND.key) return;
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/rpc/contagens',{method:'POST',headers:{'Content-Type':'application/json',apikey:BACKEND.key},body:'{}'});
+    if(!r.ok) return;
+    var c=await r.json();
+    demandaPorTipo=c.demandas_por_tipo||{};
+    demandas=Object.keys(demandaPorTipo).reduce(function(t,k){ return t+demandaPorTipo[k]; },0);
+    denuncias=c.denuncias_total||0;
+    updateStats();
+  }catch(e){}
+}
 
 /* ---------- mapa da comunidade (dados do Supabase) ---------- */
 var comMap=null, comLayers={den:null,dem:null};
@@ -1486,6 +1520,7 @@ $('search-input').addEventListener('input',function(){ renderPEVList(); applyFil
 $('toggle-cov').addEventListener('change',function(e){ toggleCov(e.target.checked); });
 renderPEVList();
 updateStats();
+carregarContagens();
 initNavSpy();
 initMaps();
 </script>
