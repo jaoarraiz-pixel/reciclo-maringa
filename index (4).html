@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Re.Ciclo — Maringá</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+:root {
+  --ink:#0d1117; --paper:#f5f0e8; --moss:#2d5016; --lime:#a8e63d; --earth:#c4874a;
+  --mist:#e8f4d4; --red:#d94f3d; --mid:#6b7c52; --card:#fff; --border:#d4cfc4; --shadow:rgba(13,17,23,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5}
+section,.ideal-wrap{scroll-margin-top:72px}
+a{cursor:pointer}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(245,240,232,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.4rem;color:var(--moss);letter-spacing:-.01em;text-decoration:none}
+.nav-logo span{color:var(--lime)}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{font-size:.82rem;font-weight:600;color:var(--mid);text-decoration:none;letter-spacing:.04em;text-transform:uppercase;transition:color .2s;padding:.3rem 0;border-bottom:2px solid transparent}
+.nav-links a:hover,.nav-links a.active{color:var(--moss);border-bottom-color:var(--lime)}
+
+/* HERO */
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1.05fr;align-items:center;padding:7rem 2.5rem 4rem;gap:3rem;position:relative;overflow:hidden;scroll-margin-top:0}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 60% 70% at 80% 50%,rgba(168,230,61,.15) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 10% 80%,rgba(45,80,22,.08) 0%,transparent 60%)}
+.hero-content{position:relative;z-index:1}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:var(--mist);border:1px solid rgba(45,80,22,.2);border-radius:999px;padding:.35rem .9rem;font-size:.78rem;font-weight:500;color:var(--moss);letter-spacing:.05em;text-transform:uppercase;margin-bottom:1.5rem}
+.hero-tag::before{content:'●';color:var(--lime);font-size:.6rem}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(2.8rem,5.4vw,4.4rem);font-weight:700;line-height:1.05;letter-spacing:-.015em;color:var(--moss)}
+h1 em{font-style:normal;color:var(--ink)}
+h1 .accent{color:var(--lime)}
+.hero-sub{margin-top:1.5rem;max-width:42ch;font-size:1.05rem;line-height:1.65;color:#4a5a38;font-weight:300}
+.hero-ctas{display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap}
+.btn-primary{background:var(--moss);color:var(--lime);border:none;border-radius:999px;padding:.85rem 2rem;font-size:.95rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s,transform .15s,box-shadow .2s;box-shadow:0 4px 20px rgba(45,80,22,.25)}
+.btn-primary:hover{background:#1e3a0f;transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,80,22,.35)}
+.btn-outline{background:transparent;color:var(--moss);border:1.5px solid var(--moss);border-radius:999px;padding:.85rem 2rem;font-size:.95rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s}
+.btn-outline:hover{background:var(--moss);color:var(--lime)}
+.hero-stats{display:flex;gap:2rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)}
+.stat-item{display:flex;flex-direction:column;gap:.2rem}
+.stat-num{font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;font-weight:700;color:var(--moss);letter-spacing:-.015em}
+.stat-label{font-size:.78rem;color:var(--mid)}
+
+.hero-visual{position:relative;z-index:1;min-width:0}
+.map-preview{position:relative;width:100%;height:560px;border-radius:2rem;overflow:hidden;border:6px solid #fff;background:#e9e4d6;box-shadow:0 30px 80px rgba(13,17,23,.22),0 0 0 1px var(--border)}
+#hero-map{position:absolute;inset:0;z-index:0}
+.hero-chip{position:absolute;z-index:500;display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:999px;padding:.5rem .95rem;font-size:.78rem;font-weight:600;color:var(--moss);box-shadow:0 6px 20px rgba(13,17,23,.18);pointer-events:none}
+.hero-chip.c1{top:1rem;left:1rem}
+.hero-chip.c2{bottom:1rem;left:1rem;color:var(--red)}
+.hero-chip i{width:.6rem;height:.6rem;border-radius:50%;display:inline-block}
+.hero-chip.c1 i{background:#3f9a1f;box-shadow:0 0 0 4px rgba(63,154,31,.2)}
+.hero-chip.c2 i{background:var(--red);box-shadow:0 0 0 4px rgba(217,79,61,.2)}
+
+/* SECTIONS */
+section{padding:6rem 2.5rem}
+.section-label{font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:1rem}
+.section-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.05;letter-spacing:-.01em;color:var(--moss)}
+.section-body{font-size:1rem;line-height:1.7;color:#4a5a38;font-weight:300;max-width:55ch;margin-top:1rem}
+
+/* PROBLEMA */
+#problema{background:var(--moss);color:var(--paper);position:relative;overflow:hidden}
+#problema::before{content:'';position:absolute;right:-10rem;top:-10rem;width:60rem;height:60rem;border-radius:50%;background:radial-gradient(ellipse,rgba(168,230,61,.08) 0%,transparent 70%);pointer-events:none}
+#problema .section-label{color:var(--lime);opacity:.8}
+#problema .section-title{color:var(--paper)}
+#problema .section-body{color:rgba(245,240,232,.7)}
+.problema-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
+.prob-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:1.25rem;padding:2rem;transition:background .25s,transform .2s}
+.prob-card:hover{background:rgba(255,255,255,.1);transform:translateY(-3px)}
+.prob-icon{font-size:2.2rem;margin-bottom:1rem;display:block}
+.prob-num{font-family:'Playfair Display',Georgia,serif;font-size:2.5rem;font-weight:700;color:var(--lime);letter-spacing:-.015em;line-height:1}
+.prob-card h3{font-family:'Playfair Display',Georgia,serif;font-size:1.1rem;font-weight:700;color:var(--paper);margin:.5rem 0}
+.prob-card p{font-size:.9rem;color:rgba(245,240,232,.65);line-height:1.6}
+
+/* MAPA */
+#mapa{background:var(--paper)}
+.mapa-layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:1.5rem;margin-top:2.5rem;align-items:start}
+.mapa-layout>div{min-width:0}
+.mapa-sidebar{display:flex;flex-direction:column;gap:.9rem}
+.search-box{position:relative}
+.search-box input{width:100%;padding:.85rem 1rem .85rem 2.8rem;border:1.5px solid var(--border);border-radius:.9rem;background:#fff;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.search-box input:focus{border-color:var(--moss);box-shadow:0 0 0 3px rgba(45,80,22,.1)}
+.search-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none}
+.filter-label{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid)}
+.filters{display:flex;flex-wrap:wrap;gap:.5rem}
+.filter-btn{padding:.4rem .9rem;border-radius:999px;font-size:.8rem;font-weight:500;border:1.5px solid var(--border);background:#fff;color:var(--mid);cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
+.filter-btn.active,.filter-btn:hover{background:var(--moss);color:var(--lime);border-color:var(--moss)}
+.locate-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;background:#fff;border:1.5px solid var(--moss);color:var(--moss);border-radius:.9rem;padding:.75rem 1rem;font-size:.88rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s}
+.locate-btn:hover{background:var(--moss);color:var(--lime)}
+.near-card{background:var(--mist);border:1.5px solid rgba(45,80,22,.25);border-radius:1rem;padding:1rem;font-size:.85rem;line-height:1.5;color:#34461f}
+.near-card b{font-family:'Playfair Display',Georgia,serif;color:var(--moss)}
+.near-card a{display:inline-block;margin-top:.5rem;color:var(--moss);font-weight:700;font-size:.8rem}
+.cov-toggle{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--ink);cursor:pointer}
+.cov-toggle input{accent-color:var(--moss)}
+.pev-list{display:flex;flex-direction:column;gap:.6rem;overflow-y:auto;max-height:430px;padding-right:.25rem}
+.pev-card{background:#fff;border:1.5px solid var(--border);border-radius:1rem;padding:1rem;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .15s}
+.pev-card.nopin{cursor:default}
+.pev-card:hover,.pev-card.selected{border-color:var(--moss);box-shadow:0 4px 16px rgba(45,80,22,.12)}
+.pev-card:not(.nopin):hover{transform:translateX(3px)}
+.pev-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
+.pev-name{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:.92rem;color:var(--moss)}
+.pev-type-badge{font-size:.68rem;padding:.2rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.badge-eletronico{background:#e8f4d4;color:var(--moss)}
+.badge-volumoso{background:#fdeedd;color:#9a5a1c}
+.pev-addr{font-size:.8rem;color:var(--mid);margin-top:.3rem}
+.pev-note{font-size:.76rem;color:#8a5a1f;margin-top:.4rem;line-height:1.45}
+.pev-items{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.6rem}
+.pev-item-tag{font-size:.7rem;background:#f0ece2;color:#5a5040;border-radius:.4rem;padding:.15rem .5rem}
+.pev-link{display:inline-block;margin-top:.6rem;font-size:.76rem;font-weight:700;color:var(--moss);text-decoration:none}
+.pev-link:hover{text-decoration:underline}
+
+.map-shell{position:relative;border-radius:1.5rem;overflow:hidden;border:6px solid #fff;background:#e9e4d6;box-shadow:0 20px 60px rgba(13,17,23,.18),0 0 0 1px var(--border)}
+#main-map{height:640px;width:100%;z-index:0}
+.map-note{margin-top:.9rem;font-size:.76rem;color:var(--mid);line-height:1.6}
+.map-fail{display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;padding:2rem;text-align:center;color:var(--mid);font-size:.9rem;line-height:1.6;background:#e9e4d6}
+
+/* Leaflet customização */
+.leaflet-container{font-family:'DM Sans',sans-serif;background:#e9e4d6}
+.leaflet-control-layers{border:none!important;border-radius:.9rem!important;box-shadow:0 6px 20px rgba(13,17,23,.2)!important;font-size:.82rem}
+.leaflet-control-layers-expanded{padding:.6rem .9rem!important}
+.leaflet-bar{border:none!important;box-shadow:0 6px 20px rgba(13,17,23,.2)!important;border-radius:.9rem!important;overflow:hidden}
+.leaflet-bar a{color:var(--moss)!important}
+.leaflet-popup-content-wrapper{border-radius:1rem;box-shadow:0 12px 36px rgba(13,17,23,.28);padding:0}
+.leaflet-popup-content{margin:0;width:250px!important}
+.pp{padding:1rem 1.1rem 1.05rem}
+.pp-badge{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--mist);color:var(--moss);border-radius:999px;padding:.2rem .6rem}
+.pp h4{font-family:'Playfair Display',Georgia,serif;font-size:1rem;font-weight:700;color:var(--moss);margin:.5rem 0 .2rem;line-height:1.2}
+.pp p{font-size:.8rem;color:#666;margin:0 0 .5rem;line-height:1.4}
+.pp-tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.7rem}
+.pp-tags span{font-size:.68rem;background:#f0ece2;border-radius:.4rem;padding:.12rem .45rem;color:#5a5040}
+.pp-btn{display:inline-block;background:var(--moss);color:var(--lime)!important;text-decoration:none;border-radius:999px;padding:.45rem 1rem;font-size:.78rem;font-weight:700}
+.pp small{display:block;margin-top:.6rem;font-size:.68rem;color:#9a9480;line-height:1.4}
+
+/* Pins */
+.pin-wrap{background:none;border:none}
+.pin{position:relative;width:34px;height:44px}
+.pin-body{position:absolute;left:3px;top:0;width:28px;height:28px;background:linear-gradient(145deg,#4fa82a,#2d5016);border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 5px 12px rgba(13,17,23,.4)}
+.pin-ico{position:absolute;left:0;top:4px;width:34px;text-align:center;font-size:13px;line-height:20px;z-index:2}
+.pin-pulse{position:absolute;left:4px;top:30px;width:26px;height:12px;border-radius:50%;background:rgba(63,154,31,.45);animation:pinpulse 2.2s ease-out infinite}
+@keyframes pinpulse{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+.me-dot{width:18px;height:18px;border-radius:50%;background:#2b7de9;border:3px solid #fff;animation:mepulse 2s infinite}
+@keyframes mepulse{0%{box-shadow:0 0 0 0 rgba(43,125,233,.55)}100%{box-shadow:0 0 0 18px rgba(43,125,233,0)}}
+.num-pin{background:none;border:none}
+.num-pin span{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--lime);border:3px solid var(--moss);color:var(--moss);font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:.72rem;box-shadow:0 4px 10px rgba(13,17,23,.35)}
+.num-pin.atual span{background:#e8b56a;border-color:#8a5a1f;color:#8a5a1f;font-size:.6rem}
+
+/* MODELO IDEAL */
+.ideal-wrap{margin-top:3.5rem;background:#fff;border:1.5px solid var(--border);border-radius:1.5rem;padding:2rem;box-shadow:0 8px 32px var(--shadow)}
+.ideal-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.ideal-title{font-family:'Playfair Display',Georgia,serif;font-size:1.6rem;font-weight:700;color:var(--moss);letter-spacing:-.01em;line-height:1.1}
+.ideal-sub{font-size:.9rem;color:var(--mid);line-height:1.6;max-width:58ch;margin-top:.5rem}
+.mode-tabs{display:flex;background:var(--paper);border:1px solid var(--border);border-radius:999px;padding:.25rem;gap:.15rem}
+.mode-btn{border:none;background:transparent;padding:.5rem 1.1rem;border-radius:999px;font-size:.82rem;font-weight:600;color:var(--mid);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.mode-btn.active{background:var(--moss);color:var(--lime)}
+.ideal-grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:1.5rem;align-items:start}
+.ideal-canvas{border:1px solid var(--border);border-radius:1.1rem;overflow:hidden;background:#fff;min-width:0}
+#ideal-map{height:540px;width:100%;z-index:0;background:#e9e4d6}
+.ideal-legend{display:flex;flex-wrap:wrap;gap:1rem;padding:.7rem 1rem;border-top:1px solid var(--border);font-size:.74rem;color:var(--mid);background:#fff}
+.ideal-legend span{display:flex;align-items:center;gap:.4rem}
+.ideal-legend i{width:.65rem;height:.65rem;border-radius:50%;display:inline-block}
+.ideal-legend i.dash{border-radius:0;width:1rem;height:0;border-top:2px dashed #8a9a70}
+.ideal-panel{display:flex;flex-direction:column;gap:1rem}
+.im-stats{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.im-stat{background:var(--paper);border-radius:.9rem;padding:.8rem 1rem}
+.im-stat b{display:block;font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;font-weight:700;color:var(--moss);letter-spacing:-.01em;line-height:1.1}
+.im-stat span{font-size:.72rem;color:var(--mid);line-height:1.3;display:block;margin-top:.15rem}
+.im-bar{height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+.im-bar div{height:100%;background:var(--moss);border-radius:999px;transition:width .5s ease,background .3s}
+.im-ctrl label{display:flex;justify-content:space-between;font-size:.78rem;font-weight:600;color:var(--moss);margin-bottom:.3rem}
+.im-ctrl input[type=range]{width:100%;accent-color:var(--moss)}
+.im-checks{display:flex;flex-direction:column;gap:.35rem;font-size:.82rem}
+.im-checks label{display:flex;align-items:center;gap:.5rem;cursor:pointer}
+.im-checks input{accent-color:var(--moss)}
+.im-msg{background:var(--mist);border-left:3px solid var(--moss);border-radius:.6rem;padding:.8rem 1rem;font-size:.82rem;line-height:1.55;color:#34461f}
+.im-clear{background:transparent;border:1.5px solid var(--red);color:var(--red);border-radius:999px;padding:.5rem 1rem;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ideal-note{margin-top:1.2rem;font-size:.76rem;color:var(--mid);line-height:1.6}
+
+/* GUIA */
+#guia{background:var(--mist)}
+.anat{margin-top:3.5rem}
+.anat-title{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.6rem;color:var(--moss)}
+.anat-sub{font-size:.92rem;color:var(--mid);margin:.4rem 0 1.5rem;max-width:640px;line-height:1.6}
+.anat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.anat-card{position:relative;overflow:hidden;min-height:250px;background:linear-gradient(160deg,#fff 0%,var(--mist) 100%);border:1px solid var(--border);border-radius:1.25rem;padding:1.6rem;cursor:pointer;outline:none;transition:box-shadow .25s,transform .25s}
+.anat-card:hover,.anat-card:focus-visible{box-shadow:0 14px 40px rgba(45,80,22,.18);transform:translateY(-3px)}
+.anat-emoji{font-size:2.8rem;display:block;margin-bottom:.9rem}
+.anat-card h4{font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;color:var(--moss);margin-bottom:.7rem}
+.anat-badge{display:inline-block;font-size:.72rem;font-weight:700;padding:.3rem .75rem;border-radius:999px}
+.anat-badge.ok{background:var(--lime);color:var(--moss)}
+.anat-badge.mid{background:#f3dfbf;color:#8a5a1e}
+.anat-badge.low{background:#f6d3cd;color:#a63a2b}
+.anat-hint{position:absolute;left:1.6rem;bottom:1.2rem;font-size:.75rem;color:var(--mid)}
+.anat-tip{position:absolute;inset:0;background:var(--moss);color:#f5f0e8;padding:1.3rem 1.4rem;transform:translateY(102%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:.55rem;overflow:auto}
+.anat-card:hover .anat-tip,.anat-card:focus-visible .anat-tip,.anat-card.on .anat-tip{transform:none}
+.anat-tip b{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--lime)}
+.anat-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.anat-chips span{background:rgba(168,230,61,.16);border:1px solid rgba(168,230,61,.4);border-radius:999px;padding:.2rem .6rem;font-size:.75rem}
+.anat-tip p{font-size:.8rem;line-height:1.55;color:rgba(245,240,232,.88)}
+.anat-note{font-size:.78rem;color:var(--mid);margin-top:1rem}
+#comunidade .com-bar{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;margin:1.4rem 0 1rem;font-size:.9rem}
+#comunidade .com-bar label{display:flex;gap:.4rem;align-items:center;cursor:pointer;font-weight:600}
+#comunidade .com-bar button{background:var(--moss);color:var(--lime);border:none;border-radius:999px;padding:.55rem 1.2rem;font-weight:700;cursor:pointer;margin-left:auto}
+#com-map{height:480px;border-radius:1.25rem;overflow:hidden;border:1px solid var(--border)}
+.com-msg{font-size:.85rem;color:var(--mid);margin-top:.8rem}
+.guia-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
+.guia-card{background:#fff;border-radius:1.25rem;padding:1.8rem;border:1px solid var(--border);transition:transform .2s,box-shadow .2s;cursor:pointer}
+.guia-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(13,17,23,.1)}
+.guia-emoji{font-size:2.5rem;display:block;margin-bottom:1rem}
+.guia-card h3{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.05rem;color:var(--moss);margin-bottom:.5rem}
+.guia-card p{font-size:.88rem;color:var(--mid);line-height:1.6}
+.guia-steps{margin-top:1rem;display:flex;flex-direction:column;gap:.4rem}
+.guia-step{display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;color:var(--ink)}
+.step-dot{width:1.3rem;height:1.3rem;border-radius:50%;background:var(--lime);color:var(--moss);font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
+
+/* DADOS */
+#dados{background:var(--ink);color:var(--paper)}
+#dados .section-label{color:var(--lime);opacity:.7}
+#dados .section-title{color:var(--paper)}
+.dados-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;align-items:start}
+.dados-form{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:1.25rem;padding:2rem}
+.dados-form h3{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.15rem;color:var(--paper);margin-bottom:1.5rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.form-group label{font-size:.78rem;color:rgba(245,240,232,.6);font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.form-group select,.form-group input,.form-group textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:.7rem;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--paper);outline:none;transition:border-color .2s;width:100%}
+.form-group select option{background:var(--ink);color:var(--paper)}
+.form-group select:focus,.form-group input:focus,.form-group textarea:focus{border-color:var(--lime)}
+.form-group textarea{resize:vertical;min-height:80px}
+.btn-lime{width:100%;background:var(--lime);color:var(--moss);border:none;border-radius:999px;padding:.85rem;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .15s;margin-top:.5rem}
+.btn-lime:hover{opacity:.88;transform:translateY(-1px)}
+.metrics-panel{display:flex;flex-direction:column;gap:1.5rem}
+.metric-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:1.25rem;padding:1.5rem}
+.metric-head{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.metric-icon{font-size:1.4rem}
+.metric-title{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:.95rem;color:var(--paper)}
+.metric-bar-wrap{display:flex;flex-direction:column;gap:.6rem}
+.metric-row{display:flex;align-items:center;gap:.8rem}
+.metric-label{font-size:.78rem;color:rgba(245,240,232,.5);width:120px;flex-shrink:0}
+.metric-bar-bg{flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+.metric-bar-fill{height:100%;border-radius:999px;background:var(--lime);transition:width 1s ease}
+.metric-val{font-size:.78rem;font-weight:600;color:var(--lime);width:2.5rem;text-align:right}
+.metric-empty{font-size:.85rem;color:rgba(245,240,232,.45);line-height:1.6}
+.metric-num-large{font-family:'Playfair Display',Georgia,serif;font-size:2.8rem;font-weight:700;color:var(--lime);letter-spacing:-.015em;line-height:1}
+.metric-sub{font-size:.82rem;color:rgba(245,240,232,.5);margin-top:.3rem}
+
+/* DENÚNCIA */
+#denuncia{background:var(--paper)}
+.denuncia-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem;align-items:start}
+.denuncia-form{background:#fff;border:1.5px solid var(--border);border-radius:1.25rem;padding:2rem}
+.denuncia-form h3{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.1rem;color:var(--moss);margin-bottom:1.5rem}
+.denuncia-form .form-group label{color:var(--mid)}
+.denuncia-form .form-group select,.denuncia-form .form-group input,.denuncia-form .form-group textarea{background:var(--paper);border-color:var(--border);color:var(--ink)}
+.denuncia-form .form-group select:focus,.denuncia-form .form-group input:focus,.denuncia-form .form-group textarea:focus{border-color:var(--moss)}
+.denuncia-form .form-group select option{background:#fff;color:var(--ink)}
+.btn-red{width:100%;background:var(--red);color:#fff;border:none;border-radius:999px;padding:.85rem;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .15s;margin-top:.5rem}
+.btn-red:hover{opacity:.88;transform:translateY(-1px)}
+.photo-drop{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:1.2rem;border:2px dashed var(--border);border-radius:.9rem;background:var(--paper);cursor:pointer;text-align:center;transition:border-color .2s,background .2s}
+.photo-drop:hover{border-color:var(--moss);background:var(--mist)}
+.photo-ico{font-size:1.8rem}
+.photo-txt{font-size:.9rem;font-weight:500;color:var(--moss)}
+.photo-drop small{font-size:.75rem;color:var(--mid)}
+.photo-preview{position:relative;border-radius:.9rem;overflow:hidden;border:1.5px solid var(--border)}
+.photo-preview img{display:block;width:100%;max-height:220px;object-fit:cover}
+.photo-remove{position:absolute;top:.6rem;right:.6rem;background:rgba(13,17,23,.75);color:#fff;border:none;border-radius:999px;padding:.35rem .8rem;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.denuncia-info{display:flex;flex-direction:column;gap:1.5rem}
+.info-card{background:#fff;border:1.5px solid var(--border);border-radius:1.25rem;padding:1.5rem}
+.info-card h4{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1rem;color:var(--moss);margin-bottom:.8rem}
+.info-card p{font-size:.88rem;color:var(--mid);line-height:1.65}
+.recent-list{display:flex;flex-direction:column;gap:.5rem}
+.recent-item{display:flex;align-items:flex-start;gap:.8rem;padding:.7rem;background:var(--paper);border-radius:.75rem}
+.recent-dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:.35rem}
+.recent-text{font-size:.82rem;color:var(--ink);line-height:1.5}
+.recent-time{font-size:.72rem;color:var(--mid);margin-top:.15rem}
+.recent-thumb{width:48px;height:48px;border-radius:.6rem;object-fit:cover;cursor:pointer;flex-shrink:0;border:1px solid var(--border)}
+
+/* IA */
+#assistente{background:var(--mist)}
+.ia-layout{display:grid;grid-template-columns:1fr 380px;gap:2rem;margin-top:2.5rem;align-items:start}
+.chat-window{background:#fff;border:1.5px solid var(--border);border-radius:1.25rem;overflow:hidden;box-shadow:0 8px 32px var(--shadow)}
+.chat-header{background:var(--moss);padding:1rem 1.5rem;display:flex;align-items:center;gap:.8rem}
+.chat-avatar{width:2.2rem;height:2.2rem;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.chat-header-name{font-family:'Playfair Display',Georgia,serif;font-weight:700;color:#fff;font-size:.95rem}
+.chat-header-status{font-size:.75rem;color:rgba(255,255,255,.6)}
+.chat-messages{height:340px;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;scroll-behavior:smooth}
+.msg{display:flex;gap:.8rem;align-items:flex-end}
+.msg.user{flex-direction:row-reverse}
+.msg-bubble{max-width:75%;padding:.75rem 1rem;border-radius:1rem;font-size:.9rem;line-height:1.55}
+.msg.bot .msg-bubble{background:var(--mist);color:var(--ink);border-bottom-left-radius:.25rem}
+.msg.user .msg-bubble{background:var(--moss);color:var(--paper);border-bottom-right-radius:.25rem}
+.msg-avatar{width:2rem;height:2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.msg.bot .msg-avatar{background:var(--lime)}
+.msg.user .msg-avatar{background:var(--moss);color:var(--lime);font-size:.75rem;font-weight:700}
+.chat-input-area{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.7rem}
+.chat-input{flex:1;padding:.75rem 1rem;border-radius:999px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;background:var(--paper);transition:border-color .2s}
+.chat-input:focus{border-color:var(--moss)}
+.chat-send{width:2.8rem;height:2.8rem;border-radius:50%;background:var(--moss);color:var(--lime);border:none;font-size:1rem;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.chat-send:hover{background:#1e3a0f}
+.quick-chips{display:flex;flex-wrap:wrap;gap:.5rem;padding:0 1.5rem 1rem}
+.chip{font-size:.78rem;padding:.35rem .8rem;border-radius:999px;background:var(--mist);color:var(--moss);border:1px solid rgba(45,80,22,.2);cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
+.chip:hover{background:var(--moss);color:var(--lime)}
+.ia-info{display:flex;flex-direction:column;gap:1.2rem}
+.ia-tip{background:#fff;border:1.5px solid var(--border);border-radius:1.25rem;padding:1.4rem}
+.ia-tip h4{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:.95rem;color:var(--moss);margin-bottom:.5rem}
+.ia-tip p{font-size:.85rem;color:var(--mid);line-height:1.6}
+
+/* FOOTER / TOAST / MODAL */
+footer{background:var(--ink);color:rgba(245,240,232,.5);padding:3rem 2.5rem;text-align:center}
+footer .footer-logo{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.6rem;color:var(--paper);letter-spacing:-.01em;margin-bottom:.5rem}
+footer .footer-logo span{color:var(--lime)}
+footer p{font-size:.85rem;margin-bottom:.3rem}
+.footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:1.4rem;margin:1.2rem 0 0}
+.footer-links a{color:rgba(245,240,232,.75);font-size:.82rem;text-decoration:none;font-weight:500}
+.footer-links a:hover{color:var(--lime)}
+footer .footer-credits{font-size:.78rem;margin-top:1.5rem;opacity:.4}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:9000;background:var(--moss);color:var(--lime);border-radius:1rem;padding:1rem 1.5rem;font-size:.9rem;font-weight:600;box-shadow:0 8px 32px rgba(13,17,23,.25);transform:translateY(120%);opacity:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.modal-overlay{position:fixed;inset:0;z-index:5000;background:rgba(13,17,23,.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:1.5rem;padding:2.5rem;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 32px 80px rgba(13,17,23,.25)}
+.modal h2{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:1.5rem;color:var(--moss);margin-bottom:.5rem}
+.modal .close-btn{float:right;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mid);margin-top:-.5rem}
+.link-box{width:100%;margin-top:.8rem;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:.7rem;font-size:.8rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--paper)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .6s ease both}
+.fade-up-1{animation-delay:.1s}.fade-up-2{animation-delay:.2s}.fade-up-3{animation-delay:.3s}.fade-up-4{animation-delay:.45s}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}
+
+@media (max-width:1000px){
+  #hero{grid-template-columns:1fr}
+  .map-preview{height:380px}
+  .problema-grid,.mapa-layout,.guia-grid,.anat-grid,.dados-layout,.denuncia-layout,.ia-layout,.ideal-grid{grid-template-columns:1fr}
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  section{padding:4rem 1.5rem}
+  #main-map{height:480px}
+  #ideal-map{height:440px}
+  .ideal-wrap{padding:1.2rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#hero">Re<span>.</span>Ciclo</a>
+  <ul class="nav-links">
+    <li><a href="#mapa">Mapa</a></li>
+    <li><a href="#modelo-ideal">Modelo ideal</a></li>
+    <li><a href="#guia">Guia</a></li>
+    <li><a href="#dados">Dados</a></li>
+    <li><a href="#denuncia">Denunciar</a></li>
+    <li><a href="#comunidade">Comunidade</a></li>
+    <li><a href="#assistente">Assistente IA</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag fade-up">Maringá — PR · Tecnologia Social</div>
+    <h1 class="fade-up fade-up-1">Descarte<br><em>certo,</em><br>cidade <span class="accent">limpa.</span></h1>
+    <p class="hero-sub fade-up fade-up-2">Plataforma de georreferenciamento para resíduos inservíveis em Maringá. Encontre pontos de entrega, aprenda a reutilizar e ajude a mapear o problema.</p>
+    <div class="hero-ctas fade-up fade-up-3">
+      <button class="btn-primary" type="button" onclick="goTo('#mapa')">Ver mapa de PEVs</button>
+      <button class="btn-outline" type="button" onclick="goTo('#dados')">Registrar demanda</button>
+    </div>
+    <div class="hero-stats fade-up fade-up-4">
+      <div class="stat-item"><span class="stat-num" id="stat-pevs">0</span><span class="stat-label">Pontos mapeados</span></div>
+      <div class="stat-item"><span class="stat-num" id="stat-demandas">0</span><span class="stat-label">Demandas registradas</span></div>
+      <div class="stat-item"><span class="stat-num" id="stat-denuncias">0</span><span class="stat-label">Denúncias enviadas</span></div>
+    </div>
+  </div>
+  <div class="hero-visual fade-up fade-up-2">
+    <div class="map-preview">
+      <div class="hero-chip c1"><i></i><span id="chip-pevs">Pontos de sucata eletrônica</span></div>
+      <div class="hero-chip c2"><i></i>Poucos pontos fixos p/ volumosos</div>
+      <div id="hero-map"><div class="map-fail">Carregando mapa…</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMA -->
+<section id="problema">
+  <div class="section-label">Por que isso importa</div>
+  <div class="section-title">Maringá tem pontos de descarte.<br>Para móveis, são poucos.</div>
+  <p class="section-body">A rede de pontos fixos da cidade é voltada sobretudo a sucata eletrônica, vidro, óleo e pilhas. Para volumosos, como móveis e colchões, o morador depende de poucas opções — e o descarte irregular cresce.</p>
+  <div class="problema-grid">
+    <div class="prob-card">
+      <span class="prob-icon">🛋️</span>
+      <div class="prob-num">Poucos</div>
+      <h3>Pontos fixos para móveis e colchões</h3>
+      <p>As opções divulgadas para volumosos são a Pedreira Municipal e a coleta solicitada pelo 156. Vale confrontar esses dados com o mapa oficial da Prefeitura e registrar a demanda que fica sem resposta.</p>
+    </div>
+    <div class="prob-card">
+      <span class="prob-icon">♻️</span>
+      <div class="prob-num">4%</div>
+      <h3>Taxa de reciclagem local</h3>
+      <p>Maringá gera em média 2.853 toneladas de resíduos por dia, mas apenas 4% têm destinação adequada via reciclagem (PMGIRSU, 2017).</p>
+    </div>
+    <div class="prob-card">
+      <span class="prob-icon">🚯</span>
+      <div class="prob-num">41,5%</div>
+      <h3>Resíduos com destino inadequado</h3>
+      <p>No Brasil, 41,5% de todo o lixo urbano teve destinação inadequada em 2023, reflexo da falta de infraestrutura e informação (ABREMA, 2024).</p>
+    </div>
+    <div class="prob-card">
+      <span class="prob-icon">📍</span>
+      <div class="prob-num">Re.Ciclo</div>
+      <h3>A solução proposta</h3>
+      <p>Mapear, educar e coletar dados sobre a demanda reprimida para subsidiar políticas públicas e pressionar pela criação de PEVs para inservíveis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MAPA -->
+<section id="mapa">
+  <div class="section-label">Georreferenciamento</div>
+  <div class="section-title">Pontos de entrega em Maringá</div>
+  <p class="section-body">Explore o mapa, troque para a visão de satélite, veja quais pontos ficam perto de você e trace a rota até eles.</p>
+
+  <div class="mapa-layout">
+    <div class="mapa-sidebar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Buscar bairro, local ou material...">
+      </div>
+      <button class="locate-btn" type="button" onclick="locateMe()">📍 Mostrar o ponto mais próximo de mim</button>
+      <div class="near-card" id="near-card" style="display:none"></div>
+
+      <div class="filter-label">Filtrar por tipo</div>
+      <div class="filters">
+        <button class="filter-btn active" type="button" onclick="setFilter('todos',this)">Todos</button>
+        <button class="filter-btn" type="button" onclick="setFilter('eletronico',this)">Sucata eletrônica</button>
+        <button class="filter-btn" type="button" onclick="setFilter('volumoso',this)">Móveis e volumosos</button>
+      </div>
+      <label class="cov-toggle"><input type="checkbox" id="toggle-cov"> Mostrar raio de 1 km ao redor dos pontos</label>
+
+      <div class="pev-list" id="pev-list"></div>
+    </div>
+
+    <div>
+      <div class="map-shell"><div id="main-map"><div class="map-fail">Carregando mapa…</div></div></div>
+      <p class="map-note">
+        Endereços reunidos de notícias e listas da Prefeitura, do Sescap-PR e da Funverde (algumas antigas) — confirme antes de ir.
+        As posições dos pinos são aproximadas e se ajustam ao endereço quando possível; o botão "Como chegar" usa o endereço exato.
+        A Prefeitura mantém um mapa oficial com mais pontos (incluindo pilhas, vidro e óleo).
+      </p>
+    </div>
+  </div>
+
+  <!-- MODELO IDEAL -->
+  <div class="ideal-wrap" id="modelo-ideal">
+    <div class="ideal-head">
+      <div>
+        <div class="section-label" style="margin-bottom:.5rem">Modelo ilustrativo e interativo</div>
+        <h3 class="ideal-title">E se Maringá tivesse PEVs suficientes?</h3>
+        <p class="ideal-sub">Sobre o mapa real da cidade, compare a rede atual com um cenário ideal. Ajuste o raio de atendimento e a proporção de habitantes por ponto, ou monte sua própria rede clicando no mapa (e arraste os pontos para reposicioná-los).</p>
+      </div>
+      <div class="mode-tabs">
+        <button class="mode-btn active" type="button" data-mode="atual">Hoje</button>
+        <button class="mode-btn" type="button" data-mode="ideal">Modelo ideal</button>
+        <button class="mode-btn" type="button" data-mode="custom">Monte o seu</button>
+      </div>
+    </div>
+
+    <div class="ideal-grid">
+      <div class="ideal-canvas">
+        <div id="ideal-map"><div class="map-fail">Carregando mapa…</div></div>
+        <div class="ideal-legend">
+          <span><i style="background:#2f8f2f"></i>Morador atendido</span>
+          <span><i style="background:#e0664f"></i>Sem PEV por perto</span>
+          <span><i class="dash"></i>Área de simulação</span>
+        </div>
+      </div>
+
+      <div class="ideal-panel">
+        <div class="im-stats">
+          <div class="im-stat"><b id="im-pevs">0</b><span id="im-l1">PEVs p/ inservíveis</span></div>
+          <div class="im-stat"><b id="im-cov">0%</b><span id="im-l2">População atendida</span></div>
+          <div class="im-stat"><b id="im-dist">—</b><span>Dist. média ao PEV mais próximo</span></div>
+          <div class="im-stat"><b id="im-hab">—</b><span>Habitantes por PEV</span></div>
+        </div>
+        <div class="im-bar"><div id="im-bar-fill" style="width:0%"></div></div>
+
+        <div class="im-ctrl">
+          <label>Raio de atendimento <span id="im-radius-val">1.500 m</span></label>
+          <input type="range" id="im-radius" min="500" max="3000" step="100" value="1500">
+        </div>
+        <div class="im-ctrl" id="im-hab-ctrl" style="display:none">
+          <label>Habitantes por PEV <span id="im-habrange-val">25.000</span></label>
+          <input type="range" id="im-habrange" min="10000" max="60000" step="5000" value="25000">
+        </div>
+
+        <div class="im-checks">
+          <label><input type="checkbox" id="im-showcov" checked> Mostrar área de cobertura</label>
+          <label><input type="checkbox" id="im-showdots" checked> Mostrar população simulada</label>
+        </div>
+
+        <div class="im-msg" id="im-msg">Carregando simulação…</div>
+        <button class="im-clear" id="im-clear" type="button" style="display:none">Limpar pontos</button>
+      </div>
+    </div>
+
+    <p class="ideal-note">
+      ⚠️ Simulação ilustrativa: a população (~410 mil habitantes, Censo 2022) é distribuída de forma sintética, mais densa no centro, dentro de uma área aproximada da zona urbana — não são dados de setores censitários.
+      A proporção "habitantes por PEV" é um parâmetro ajustável, não uma norma oficial. O cenário "Hoje" usa os pontos de sucata eletrônica do mapa acima.
+    </p>
+  </div>
+</section>
+
+<!-- GUIA -->
+<section id="guia">
+  <div class="section-label">Educação ambiental</div>
+  <div class="section-title">Antes de descartar,<br>reutilize.</div>
+  <p class="section-body">A economia circular começa em casa. Veja as alternativas antes de levar seu item a um PEV.</p>
+
+  <div class="guia-grid">
+    <div class="guia-card" onclick="openGuia('movel')">
+      <span class="guia-emoji">🛋️</span>
+      <h3>Móveis e estofados</h3>
+      <p>Sofás, camas, armários e cadeiras têm alto potencial de doação e reforma.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Avalie se pode ser doado ou reformado</div>
+        <div class="guia-step"><div class="step-dot">2</div>Contate bazares e centros comunitários</div>
+        <div class="guia-step"><div class="step-dot">3</div>Se necessário, solicite a coleta pelo 156</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('eletrodomestico')">
+      <span class="guia-emoji">🧊</span>
+      <h3>Eletrodomésticos</h3>
+      <p>Geladeiras, fogões e máquinas contêm metais valiosos que podem ser recuperados.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Verifique se ainda funciona — doe ou venda</div>
+        <div class="guia-step"><div class="step-dot">2</div>Ferros-velhos aceitam para reaproveitamento</div>
+        <div class="guia-step"><div class="step-dot">3</div>Itens grandes: peça coleta pelo 156</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('eletronico')">
+      <span class="guia-emoji">💻</span>
+      <h3>Eletrônicos e celulares</h3>
+      <p>Maringá possui pontos de sucata eletrônica — o desafio é o desconhecimento e a concentração no centro.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Nunca jogue no lixo comum — metais pesados</div>
+        <div class="guia-step"><div class="step-dot">2</div>Use o mapa para achar o ponto mais próximo</div>
+        <div class="guia-step"><div class="step-dot">3</div>Lojas de operadoras aceitam celulares e baterias</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('colchao')">
+      <span class="guia-emoji">🛏️</span>
+      <h3>Colchões</h3>
+      <p>Um dos itens mais descartados irregularmente e muito lento para se decompor.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Verifique a logística reversa do fabricante</div>
+        <div class="guia-step"><div class="step-dot">2</div>Algumas lojas recolhem o antigo na entrega</div>
+        <div class="guia-step"><div class="step-dot">3</div>Registre a demanda nesta plataforma</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('pneu')">
+      <span class="guia-emoji">🔄</span>
+      <h3>Pneus</h3>
+      <p>Pneus inservíveis acumulam água e viram criadouro de mosquitos; a destinação é regulamentada.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Borracharias e revendas recebem pneus usados</div>
+        <div class="guia-step"><div class="step-dot">2</div>O programa Reciclanip organiza a coleta nacional</div>
+        <div class="guia-step"><div class="step-dot">3</div>Jamais queime — libera gases tóxicos</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('outros')">
+      <span class="guia-emoji">❓</span>
+      <h3>Outros itens</h3>
+      <p>Não sabe onde descartar seu item? Use o assistente IA ou registre a demanda abaixo.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Pergunte ao assistente da plataforma</div>
+        <div class="guia-step"><div class="step-dot">2</div>Registre sua demanda para gerar dados</div>
+        <div class="guia-step"><div class="step-dot">3</div>Ajude a mapear o problema em Maringá</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="anat">
+    <h3 class="anat-title">Do que é feito o seu móvel?</h3>
+    <p class="anat-sub">Passe o cursor (ou toque) sobre cada peça para ver os materiais e como ela se classifica para reaproveitamento.</p>
+    <div class="anat-grid" id="anat-grid"></div>
+    <p class="anat-note">Classificação orientativa, baseada em critérios gerais de reforma e reciclagem. O que cada cooperativa aceita pode variar.</p>
+  </div>
+</section>
+
+<!-- DADOS -->
+<section id="dados">
+  <div class="section-label">Coleta de dados · Pesquisa</div>
+  <div class="section-title">Registre sua demanda.<br>Gere evidência.</div>
+  <p class="section-body" style="color:rgba(245,240,232,.6)">Não encontrou onde descartar? Seu registro vira dado que evidencia a lacuna na política pública de Maringá.</p>
+
+  <div class="dados-layout">
+    <div class="dados-form">
+      <h3>📋 Não encontrei onde descartar</h3>
+      <div class="form-group">
+        <label>Tipo de inservível</label>
+        <select id="dem-tipo">
+          <option value="">Selecione...</option>
+          <option>Sofá / Estofado</option>
+          <option>Cama / Colchão</option>
+          <option>Armário / Guarda-roupa</option>
+          <option>Mesa / Cadeira</option>
+          <option>Geladeira / Freezer</option>
+          <option>Fogão / Micro-ondas</option>
+          <option>Máquina de lavar</option>
+          <option>Televisão / Monitor</option>
+          <option>Computador / Notebook</option>
+          <option>Celular / Tablet</option>
+          <option>Pneu</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Bairro em Maringá</label>
+        <input type="text" id="dem-bairro" placeholder="Ex: Jardim Alvorada">
+      </div>
+      <div class="form-group">
+        <label>Quantidade aproximada</label>
+        <select id="dem-qtd">
+          <option>1 item</option>
+          <option>2 a 5 itens</option>
+          <option>Mais de 5 itens</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Observação (opcional)</label>
+        <textarea id="dem-obs" placeholder="Descreva o item ou situação..."></textarea>
+      </div>
+      <button class="btn-lime" type="button" onclick="registrarDemanda()">Registrar demanda →</button>
+    </div>
+
+    <div class="metrics-panel">
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">📊</span><span class="metric-title">Demanda registrada por tipo</span></div>
+        <div class="metric-bar-wrap" id="demanda-bars"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">🏘️</span><span class="metric-title">Total de registros</span></div>
+        <div class="metric-num-large" id="total-registros">0</div>
+        <div class="metric-sub">demandas sem PEV disponível registradas nesta sessão</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">📝</span><span class="metric-title">Participe da pesquisa</span></div>
+        <p style="font-size:.85rem;color:rgba(245,240,232,.6);line-height:1.65;margin-bottom:1rem">Responda a um questionário de cerca de 5 minutos. Suas respostas ajudam a dimensionar a demanda real em Maringá.</p>
+        <a class="btn-lime" href="questionario.html" style="display:inline-block;text-decoration:none">Responder questionário →</a>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">💡</span><span class="metric-title">Por que registrar?</span></div>
+        <p style="font-size:.85rem;color:rgba(245,240,232,.55);line-height:1.65">Cada registro é um dado que comprova a demanda reprimida por PEVs em Maringá. Esses números podem subsidiar a criação de infraestrutura oficial pelo poder público municipal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DENÚNCIA -->
+<section id="denuncia">
+  <div class="section-label">Mapeamento colaborativo</div>
+  <div class="section-title">Viu descarte irregular?<br>Registre aqui.</div>
+  <p class="section-body">Denúncias com foto e local criam um mapa do problema em Maringá — evidência concreta para políticas públicas.</p>
+
+  <div class="denuncia-layout">
+    <div class="denuncia-form">
+      <h3>🚨 Registrar descarte irregular</h3>
+      <div class="form-group">
+        <label>Tipo de resíduo encontrado</label>
+        <select id="den-tipo">
+          <option value="">Selecione...</option>
+          <option>Móveis / Estofados</option>
+          <option>Eletrodomésticos</option>
+          <option>Eletrônicos</option>
+          <option>Pneus</option>
+          <option>Misturado / Vários</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Local (bairro ou endereço)</label>
+        <input type="text" id="den-local" placeholder="Ex: Av. Colombo, Zona 7">
+      </div>
+      <div class="form-group">
+        <label>Volume aproximado</label>
+        <select id="den-volume">
+          <option>Pequeno (1-2 itens)</option>
+          <option>Médio (3-10 itens)</option>
+          <option>Grande (mais de 10 itens)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Descrição adicional</label>
+        <textarea id="den-desc" placeholder="Descreva o que encontrou..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Foto do local (opcional)</label>
+        <div class="photo-drop" id="photo-drop" onclick="document.getElementById('den-foto').click()">
+          <input type="file" id="den-foto" accept="image/*" capture="environment" hidden onchange="previewFoto(this)">
+          <span class="photo-ico">📷</span>
+          <span class="photo-txt">Tirar foto ou escolher da galeria</span>
+          <small>JPG, PNG ou WebP · até 5 MB</small>
+        </div>
+        <div class="photo-preview" id="photo-preview" style="display:none">
+          <img id="photo-img" alt="Pré-visualização da foto">
+          <button type="button" class="photo-remove" onclick="removerFoto()">✕ Remover foto</button>
+        </div>
+      </div>
+      <button class="btn-red" type="button" onclick="registrarDenuncia()">Enviar denúncia →</button>
+    </div>
+
+    <div class="denuncia-info">
+      <div class="info-card">
+        <h4>🗺️ Como isso vira dado</h4>
+        <p>Cada denúncia pode ser georreferenciada e agrupada por bairro. O resultado é um mapa de calor do descarte irregular em Maringá, construído pela própria população.</p>
+      </div>
+      <div class="info-card">
+        <h4>📝 Ajude a pesquisa</h4>
+        <p>Quer contribuir além da denúncia? Responda ao questionário (cerca de 5 minutos).</p>
+        <p style="margin-top:.8rem"><a href="questionario.html" style="color:var(--moss);font-weight:700">Responder questionário →</a></p>
+      </div>
+      <div class="info-card">
+        <h4>📌 Registros recentes</h4>
+        <div class="recent-list" id="recent-list">
+          <div class="recent-item"><div class="recent-dot"></div><div><div class="recent-text">Sofás e colchões — Jardim Alvorada</div><div class="recent-time">Exemplo ilustrativo · Médio porte</div></div></div>
+          <div class="recent-item"><div class="recent-dot"></div><div><div class="recent-text">Geladeira e fogão — Vila Operária</div><div class="recent-time">Exemplo ilustrativo · Pequeno porte</div></div></div>
+          <div class="recent-item"><div class="recent-dot"></div><div><div class="recent-text">Pneus e móveis — Zona 5</div><div class="recent-time">Exemplo ilustrativo · Grande porte</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPA DA COMUNIDADE -->
+<section id="comunidade">
+  <div class="section-label">Mapa da comunidade</div>
+  <div class="section-title">O que a cidade já<br>está dizendo.</div>
+  <p class="section-body">Cada ponto vem de um registro real de demanda ou denúncia. Os locais são aproximados (cerca de 100 metros) para proteger quem registrou. Textos e endereços digitados não aparecem aqui.</p>
+  <div class="com-bar">
+    <label><input type="checkbox" id="com-den" checked> <span style="color:#d94f3d">●</span> Denúncias (<b id="com-n-den">0</b>)</label>
+    <label><input type="checkbox" id="com-dem" checked> <span style="color:#e0a24a">●</span> Demandas (<b id="com-n-dem">0</b>)</label>
+    <button type="button" id="com-refresh">Atualizar</button>
+  </div>
+  <div id="com-map"></div>
+  <p class="com-msg" id="com-msg">Carregando registros…</p>
+</section>
+
+<!-- ASSISTENTE IA -->
+<section id="assistente">
+  <div class="section-label">Inteligência artificial</div>
+  <div class="section-title">Assistente Re.Ciclo</div>
+  <p class="section-body">Tire dúvidas sobre descarte, reciclagem e pontos de coleta em Maringá. O assistente usa IA para responder em tempo real.</p>
+
+  <div class="ia-layout">
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">🤖</div>
+        <div>
+          <div class="chat-header-name">Assistente Re.Ciclo</div>
+          <div class="chat-header-status">● Online · IA para resíduos em Maringá</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg bot">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">Olá! Sou o assistente do Re.Ciclo. Posso te ajudar a encontrar onde descartar seus inservíveis em Maringá, explicar como funciona a reciclagem ou tirar dúvidas sobre o projeto. Como posso ajudar?</div>
+        </div>
+      </div>
+      <div class="quick-chips">
+        <span class="chip" onclick="sendChip(this)">Onde jogar sofá fora?</span>
+        <span class="chip" onclick="sendChip(this)">Onde descartar eletrônicos?</span>
+        <span class="chip" onclick="sendChip(this)">O que é economia circular?</span>
+        <span class="chip" onclick="sendChip(this)">Como descartar colchão?</span>
+      </div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chat-input" placeholder="Digite sua dúvida..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button class="chat-send" type="button" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <div class="ia-info">
+      <div class="ia-tip"><h4>🧠 Como o assistente funciona</h4><p>O assistente usa a API da Anthropic (Claude) com contexto sobre o descarte de resíduos em Maringá e práticas de economia circular. Ele orienta sobre o descarte correto e incentiva o registro de demanda quando não há solução local.</p></div>
+      <div class="ia-tip"><h4>📍 Contexto local</h4><p>O assistente conhece os pontos de sucata eletrônica, a Pedreira Municipal e o canal 156 para coleta de itens grandes, e sempre recomenda confirmar as regras atuais com a Prefeitura.</p></div>
+      <div class="ia-tip"><h4>⚠️ Limitação importante</h4><p>O assistente não substitui a orientação oficial da Prefeitura de Maringá. Para coleta especial de grande porte, consulte a Secretaria de Meio Ambiente ou ligue 156.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Re<span>.</span>Ciclo</div>
+  <p>Plataforma digital de georreferenciamento para resíduos inservíveis</p>
+  <p>Maringá — Paraná · Brasil</p>
+  <div class="footer-links">
+    <a href="#hero">↑ Topo</a>
+    <a href="#mapa">Mapa</a>
+    <a href="#modelo-ideal">Modelo ideal</a>
+    <a href="#guia">Guia</a>
+    <a href="#dados">Dados</a>
+    <a href="#denuncia">Denunciar</a>
+    <a href="#comunidade">Comunidade</a>
+    <a href="#assistente">Assistente IA</a>
+  </div>
+  <div class="footer-credits">
+    João Pedro Arraiz Nascimento · Colégio Sesi Maringá · 2025<br>
+    Orientador: Lucas Forlin Pereira · Coorientadora: Mariana Marques Nogueira Wendt
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PARTE 1 — NÚCLEO (não depende do Leaflet)
+   Navegação, listas, formulários, chat e guia funcionam mesmo
+   que o mapa demore ou falhe ao carregar.
+═══════════════════════════════════════════════════════════════ */
+var CENTER = [-23.4253, -51.9386];           // Catedral de Maringá
+var POP = 409657;                            // Censo 2022 (IBGE)
+var TIPO_LABEL = { eletronico: 'Sucata eletrônica', volumoso: 'Móveis e volumosos' };
+
+var PEVS = [
+  { id:1,  nome:'Paço Municipal',            addr:'Av. XV de Novembro, 701 — Centro',              q:'Avenida XV de Novembro, 701, Maringá, PR, Brasil',            qs:'Avenida XV de Novembro, Maringá, PR, Brasil',            tipo:'eletronico', ico:'🏛️', items:['Sucata eletrônica'],              fonte:'Sescap-PR (2025)',          lat:-23.4215, lng:-51.9345 },
+  { id:2,  nome:'Câmara Municipal',          addr:'Av. Papa João XXIII, 239',                      q:'Avenida Papa João XXIII, 239, Maringá, PR, Brasil',           qs:'Avenida Papa João XXIII, Maringá, PR, Brasil',           tipo:'eletronico', ico:'🏛️', items:['Sucata eletrônica'],              fonte:'Sescap-PR (2025)',          lat:-23.4235, lng:-51.9325 },
+  { id:3,  nome:'Tiro de Guerra de Maringá', addr:'Av. Mandacaru, 730 — Vila Santa Isabel',        q:'Avenida Mandacaru, 730, Maringá, PR, Brasil',                 qs:'Avenida Mandacaru, Maringá, PR, Brasil',                 tipo:'eletronico', ico:'🛡️', items:['Sucata eletrônica','Vidro'],      fonte:'Sescap-PR (2025)',          lat:-23.4300, lng:-51.9560 },
+  { id:4,  nome:'4º Batalhão da PM',         addr:'Rua Mitsuzo Taguchi, 99 — Vila Nova',           q:'Rua Mitsuzo Taguchi, 99, Maringá, PR, Brasil',                qs:'Rua Mitsuzo Taguchi, Maringá, PR, Brasil',               tipo:'eletronico', ico:'🛡️', items:['Sucata eletrônica','Vidro'],      fonte:'Sescap-PR (2025)',          lat:-23.4470, lng:-51.9300 },
+  { id:5,  nome:'SESI',                      addr:'Rua Antônio Carniel, 499 — Zona 5',             q:'Rua Antônio Carniel, 499, Maringá, PR, Brasil',               qs:'Rua Antônio Carniel, Maringá, PR, Brasil',               tipo:'eletronico', ico:'🏫', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4130, lng:-51.9215, antigo:true },
+  { id:6,  nome:'SESC-PR',                   addr:'Rua Prof. Lauro Eduardo Werneck, 531 — Zona 7', q:'Rua Professor Lauro Eduardo Werneck, 531, Maringá, PR, Brasil', qs:'Rua Professor Lauro Eduardo Werneck, Maringá, PR, Brasil', tipo:'eletronico', ico:'🏫', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4075, lng:-51.9325, antigo:true },
+  { id:7,  nome:'Terminal Urbano',           addr:'Av. Tamandaré, 630 — Centro',                   q:'Avenida Tamandaré, 630, Maringá, PR, Brasil',                 qs:'Avenida Tamandaré, Maringá, PR, Brasil',                 tipo:'eletronico', ico:'🚌', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4215, lng:-51.9400, antigo:true },
+  { id:8,  nome:'Terminal Rodoviário',       addr:'Av. Tuiuti, 180 — Zona 8',                      q:'Avenida Tuiuti, 180, Maringá, PR, Brasil',                    qs:'Avenida Tuiuti, Maringá, PR, Brasil',                    tipo:'eletronico', ico:'🚌', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4140, lng:-51.9400, antigo:true },
+  { id:9,  nome:'Faculdade Cidade Verde',    addr:'Av. Horácio Raccanello Filho, 5950',            q:'Avenida Horácio Raccanello Filho, 5950, Maringá, PR, Brasil', qs:'Avenida Horácio Raccanello Filho, Maringá, PR, Brasil',  tipo:'eletronico', ico:'🎓', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4420, lng:-51.9540, antigo:true },
+  { id:10, nome:'Super Muffato',             addr:'Av. Cerro Azul, 2075 — Jd. Novo Horizonte',     q:'Avenida Cerro Azul, 2075, Maringá, PR, Brasil',               qs:'Avenida Cerro Azul, Maringá, PR, Brasil',                tipo:'eletronico', ico:'🛒', items:['Sucata eletrônica','Lâmpadas'],   fonte:'Prefeitura / Funverde',     lat:-23.4085, lng:-51.9545, antigo:true }
+];
+
+var VOLUMOSOS = [
+  { id:101, nome:'Pedreira Municipal', addr:'Estrada 200, PR-317, km 90 (saída para Astorga)', q:'Pedreira Municipal, Maringá, PR, Brasil', tipo:'volumoso', items:['Móveis','Colchões'], nota:'Destino divulgado pela Prefeitura para móveis. Confirme regras e horários antes de ir.' },
+  { id:102, nome:'Ecoponto — Jardim Piatã', addr:'Jardim Piatã', tipo:'volumoso', items:['Recicláveis','Inservíveis'], nota:'Primeiro ecoponto fixo previsto pela Prefeitura; o recebimento foi suspenso após um incêndio. Confirme se já reabriu.' },
+  { id:103, nome:'Coleta de itens grandes — 156', addr:'Solicitação por telefone/aplicativo: 156', tipo:'volumoso', items:['Móveis','Eletrodomésticos'], nota:'A Prefeitura recolhe itens grandes mediante solicitação pelo 156.' }
+];
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function fmt(n){ return n.toLocaleString('pt-BR'); }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function showToast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },3200); }
+function dirUrl(p){ return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.q||(p.nome+', Maringá, PR')); }
+function dist(a,b){
+  var R=6371000, toR=function(x){return x*Math.PI/180;}, dLat=toR(b[0]-a[0]), dLng=toR(b[1]-a[1]);
+  var h=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toR(a[0]))*Math.cos(toR(b[0]))*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function rng(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- navegação (à prova de iframe) ---------- */
+function goTo(sel){
+  var el=document.querySelector(sel); if(!el) return;
+  try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }
+  catch(e){ try{ window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset||0) - 70); }catch(e2){} }
+}
+function openExternal(url){
+  var w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){}
+  if(w){ try{ w.opener=null; }catch(e){} return; }
+  // popup bloqueado: mostra o link para copiar
+  $('modal-content').innerHTML='<button class="close-btn" onclick="closeModal()">✕</button><h2>Abrir no Google Maps</h2>'+
+    '<p style="font-size:.9rem;color:#4a5a38;line-height:1.6;margin-top:.5rem">O navegador bloqueou a abertura automática. Copie o link abaixo e cole em uma nova aba:</p>'+
+    '<input class="link-box" id="link-box" readonly value="'+esc(url)+'" onclick="this.select()">'+
+    '<button onclick="copiarLink()" style="margin-top:1rem;background:#2d5016;color:#a8e63d;border:none;border-radius:999px;padding:.7rem 1.6rem;font-weight:700;cursor:pointer;font-family:\'DM Sans\',sans-serif">Copiar link</button>';
+  $('modal-overlay').classList.add('open');
+}
+function copiarLink(){
+  var b=$('link-box'); b.select();
+  try{ document.execCommand('copy'); showToast('✅ Link copiado!'); }catch(e){ showToast('Selecione e copie o link manualmente'); }
+}
+// captura os cliques antes do Leaflet (que bloqueia a propagação dentro dos popups)
+document.addEventListener('click',function(e){
+  var t=e.target; if(!t||!t.closest) return;
+  var ext=t.closest('a[data-ext]');
+  if(ext){ e.preventDefault(); openExternal(ext.href); return; }
+  var a=t.closest('a[href^="#"]');
+  if(a){ var h=a.getAttribute('href'); if(h&&h.length>1){ e.preventDefault(); goTo(h); } }
+},true);
+
+function initNavSpy(){
+  if(!('IntersectionObserver' in window)) return;
+  var links={}; document.querySelectorAll('.nav-links a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){
+      document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active'); });
+      var a=links[en.target.id]; if(a) a.classList.add('active');
+    }});
+  },{rootMargin:'-45% 0px -50% 0px'});
+  ['mapa','modelo-ideal','guia','dados','denuncia','assistente'].forEach(function(id){ var el=$(id); if(el) io.observe(el); });
+}
+
+/* ---------- popups e lista ---------- */
+function precTxt(p){
+  if(p.prec==='end') return '📍 Posição ajustada pelo endereço.';
+  if(p.prec==='rua') return '📍 Posição aproximada (centro da rua).';
+  return '📍 Posição aproximada — use "Como chegar" para o endereço exato.';
+}
+function popupHtml(p){
+  return '<div class="pp"><span class="pp-badge">'+TIPO_LABEL[p.tipo]+'</span><h4>'+esc(p.nome)+'</h4><p>'+esc(p.addr)+'</p>'+
+    '<div class="pp-tags">'+p.items.map(function(i){return '<span>'+esc(i)+'</span>';}).join('')+'</div>'+
+    '<a class="pp-btn" data-ext target="_blank" rel="noopener" href="'+dirUrl(p)+'">Como chegar ↗</a>'+
+    '<small>'+precTxt(p)+(p.antigo?' Lista antiga: confirme se o ponto ainda recebe.':'')+'<br>Fonte: '+esc(p.fonte)+'</small></div>';
+}
+
+var filtroAtivo='todos', selectedPEV=null, userMarker=null;
+var heroMap=null, mainMap=null, idealMapRef=null, covLayer=null;
+var heroMarkers={}, mainMarkers={};
+var onPevsMoved=function(){};
+
+function matches(p){
+  var q=$('search-input').value.trim().toLowerCase();
+  var okF = filtroAtivo==='todos' || p.tipo===filtroAtivo;
+  var okS = !q || (p.nome+' '+p.addr+' '+p.items.join(' ')).toLowerCase().indexOf(q)>-1;
+  return okF && okS;
+}
+function applyFilter(){
+  if(!mainMap) return;
+  PEVS.forEach(function(p){ var m=mainMarkers[p.id]; if(!m) return; if(matches(p)){ if(!mainMap.hasLayer(m)) m.addTo(mainMap); } else mainMap.removeLayer(m); });
+}
+function renderPEVList(){
+  var list=$('pev-list'); list.innerHTML='';
+  var all=PEVS.concat(VOLUMOSOS).filter(matches);
+  if(!all.length){ list.innerHTML='<div class="pev-card nopin"><div class="pev-addr">Nenhum ponto encontrado para essa busca.</div></div>'; return; }
+  all.forEach(function(p){
+    var pin=!!p.lat;
+    var div=document.createElement('div');
+    div.className='pev-card'+(pin?'':' nopin')+(selectedPEV===p.id?' selected':'');
+    div.setAttribute('data-id',p.id);
+    div.innerHTML=
+      '<div class="pev-card-head"><div class="pev-name">'+(pin?'📍':'ℹ️')+' '+esc(p.nome)+'</div>'+
+      '<span class="pev-type-badge badge-'+p.tipo+'">'+(p.tipo==='eletronico'?'Eletrônico':'Volumoso')+'</span></div>'+
+      '<div class="pev-addr">'+esc(p.addr)+'</div>'+
+      (p.nota?'<div class="pev-note">'+esc(p.nota)+'</div>':'')+
+      '<div class="pev-items">'+p.items.map(function(i){return '<span class="pev-item-tag">'+esc(i)+'</span>';}).join('')+'</div>'+
+      (p.q?'<a class="pev-link" data-ext target="_blank" rel="noopener" href="'+dirUrl(p)+'">Como chegar ↗</a>':'');
+    if(pin) div.addEventListener('click',function(e){ if(e.target.closest('a')) return; selectPEV(p.id,true); });
+    list.appendChild(div);
+  });
+}
+function selectPEV(id,fly){
+  selectedPEV=id;
+  var p=PEVS.filter(function(x){return x.id===id;})[0]; if(!p) return;
+  if(mainMap && mainMarkers[id]){
+    var m=mainMarkers[id]; if(!mainMap.hasLayer(m)) m.addTo(mainMap);
+    if(fly) mainMap.flyTo([p.lat,p.lng],16,{duration:.9});
+    setTimeout(function(){ m.openPopup(); }, fly?900:0);
+  }
+  renderPEVList();
+  var el=document.querySelector('.pev-card[data-id="'+id+'"]'); if(el) el.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function setFilter(f,btn){
+  filtroAtivo=f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderPEVList(); applyFilter();
+}
+function buildCov(){
+  if(!covLayer) return;
+  covLayer.clearLayers();
+  PEVS.forEach(function(p){ L.circle([p.lat,p.lng],{radius:1000,color:'#2d5016',weight:1,opacity:.6,fillColor:'#a8e63d',fillOpacity:.18,interactive:false}).addTo(covLayer); });
+}
+function toggleCov(on){
+  if(!mainMap||!covLayer){ showToast('O mapa ainda não carregou'); return; }
+  buildCov();
+  if(on) covLayer.addTo(mainMap); else mainMap.removeLayer(covLayer);
+}
+function locateMe(){
+  if(!navigator.geolocation){ showToast('⚠️ Seu navegador não permite localização'); return; }
+  showToast('📍 Buscando sua localização…');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var me=[pos.coords.latitude,pos.coords.longitude];
+    var best=null,bd=Infinity; PEVS.forEach(function(p){ var d=dist(me,[p.lat,p.lng]); if(d<bd){bd=d;best=p;} });
+    var card=$('near-card'); card.style.display='block';
+    if(bd>60000){ card.innerHTML='Você parece estar fora de Maringá — o ponto mais próximo fica a '+fmt(Math.round(bd/1000))+' km.'; }
+    else {
+      var dtxt = bd<1000 ? Math.round(bd)+' m' : (bd/1000).toFixed(1).replace('.',',')+' km';
+      card.innerHTML='Ponto mais próximo: <b>'+esc(best.nome)+'</b> — a cerca de <b>'+dtxt+'</b> em linha reta.<br><a data-ext target="_blank" rel="noopener" href="'+dirUrl(best)+'">Traçar rota ↗</a>';
+    }
+    if(mainMap){
+      if(userMarker) mainMap.removeLayer(userMarker);
+      userMarker=L.marker(me,{icon:L.divIcon({className:'',html:'<div class="me-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(mainMap).bindTooltip('Você está aqui');
+      mainMap.fitBounds(L.latLngBounds([me,[best.lat,best.lng]]),{padding:[80,80],maxZoom:16});
+    }
+    selectPEV(best.id,false);
+  },function(){ showToast('⚠️ Não foi possível obter sua localização'); },{enableHighAccuracy:true,timeout:10000});
+}
+
+/* ---------- guia (modais) ---------- */
+var guiaData = {
+  movel:{ titulo:'🛋️ Móveis e estofados', corpo:'<p>Os pontos fixos de Maringá são voltados sobretudo a sucata eletrônica, vidro, óleo e pilhas. Para móveis, as opções divulgadas são a <strong>Pedreira Municipal</strong> e a <strong>coleta solicitada pelo 156</strong>.</p><h4 style="margin:1rem 0 .5rem;color:#2d5016">O que você pode fazer:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Doe para bazares, igrejas ou centros comunitários</li><li>Anuncie gratuitamente em grupos e marketplaces locais</li><li>Procure reformadores de móveis</li><li>Solicite a coleta de itens grandes pelo <strong>156</strong></li><li><strong>Registre sua demanda</strong> nesta plataforma se não conseguir nenhuma alternativa</li></ul>'},
+  eletrodomestico:{ titulo:'🧊 Eletrodomésticos', corpo:'<p>Geladeiras contêm gás refrigerante que não pode ser liberado. Fogões e máquinas têm metais recuperáveis.</p><h4 style="margin:1rem 0 .5rem;color:#2d5016">Alternativas:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Ferros-velhos compram ou retiram eletrodomésticos</li><li>Assistências técnicas podem reaproveitar peças</li><li>Itens grandes: solicite a coleta pelo 156</li><li>Verifique a logística reversa do fabricante</li></ul>'},
+  eletronico:{ titulo:'💻 Eletrônicos — pontos em Maringá', corpo:'<p>Este é o segmento com mais pontos de entrega, mas eles se concentram perto do centro. Veja o mapa para achar o mais próximo.</p><h4 style="margin:1rem 0 .5rem;color:#2d5016">Dicas:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Nunca descarte em lixo comum — metais pesados contaminam solo e água</li><li>Confira o endereço antes de ir: algumas listas são antigas</li><li>Lojas de operadoras costumam aceitar celulares e baterias</li></ul>'},
+  colchao:{ titulo:'🛏️ Colchões', corpo:'<p>Colchões ocupam muito espaço e demoram a se decompor. Estão entre os itens mais descartados irregularmente.</p><h4 style="margin:1rem 0 .5rem;color:#2d5016">O que fazer:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Lojas de colchões às vezes recolhem o antigo na entrega do novo</li><li>Verifique a logística reversa do fabricante</li><li>Solicite a coleta de itens grandes pelo 156</li><li>Registre a demanda nesta plataforma</li></ul>'},
+  pneu:{ titulo:'🔄 Pneus', corpo:'<p>Pneus inservíveis acumulam água e viram criadouro de mosquitos. A destinação é regulamentada pela Resolução Conama 416/2009.</p><h4 style="margin:1rem 0 .5rem;color:#2d5016">Onde entregar:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Borracharias e revendedoras recebem pneus usados</li><li>Programa Reciclanip — rede nacional de coleta</li><li>Jamais queime — libera gases tóxicos</li></ul>'},
+  outros:{ titulo:'❓ Outros itens', corpo:'<p>Para itens que não se encaixam nas categorias acima, use o assistente Re.Ciclo ou registre a demanda para gerar dados sobre o problema.</p>'}
+};
+function openGuia(tipo){
+  var d=guiaData[tipo];
+  $('modal-content').innerHTML='<button class="close-btn" onclick="closeModal()">✕</button><h2>'+d.titulo+'</h2>'+
+    '<div style="margin-top:1rem;font-size:.95rem;line-height:1.7;color:#4a5a38">'+d.corpo+'</div>'+
+    '<button onclick="closeModal();goTo(\'#dados\')" style="margin-top:1.5rem;background:#2d5016;color:#a8e63d;border:none;border-radius:999px;padding:.8rem 1.8rem;font-size:.9rem;font-weight:700;cursor:pointer;font-family:\'DM Sans\',sans-serif">Registrar demanda →</button>';
+  $('modal-overlay').classList.add('open');
+}
+function closeModal(){ $('modal-overlay').classList.remove('open'); }
+
+/* ---------- demandas, denúncias e foto ---------- */
+var demandas=0, denuncias=0, fotoDataUrl=null, demandaPorTipo={};
+
+function animateNum(id,target){
+  var el=$(id), cur=0, step=Math.max(1,Math.floor(target/30));
+  if(!target){ el.textContent=0; return; }
+  var t=setInterval(function(){ cur=Math.min(cur+step,target); el.textContent=cur; if(cur>=target)clearInterval(t); },40);
+}
+function renderBars(){
+  var box=$('demanda-bars'), entries=Object.keys(demandaPorTipo).map(function(k){return [k,demandaPorTipo[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  if(!entries.length){ box.innerHTML='<div class="metric-empty">Ainda não há registros. Envie uma demanda ao lado para ver o gráfico ganhar forma.</div>'; return; }
+  box.innerHTML=entries.map(function(en){
+    var pct=Math.round(en[1]/demandas*100);
+    return '<div class="metric-row"><span class="metric-label">'+esc(en[0])+'</span><div class="metric-bar-bg"><div class="metric-bar-fill" style="width:'+pct+'%"></div></div><span class="metric-val">'+pct+'%</span></div>';
+  }).join('');
+}
+function updateStats(){
+  $('stat-pevs').textContent=PEVS.length;
+  $('chip-pevs').textContent=PEVS.length+' pontos de sucata eletrônica';
+  animateNum('stat-demandas',demandas);
+  animateNum('stat-denuncias',denuncias);
+  $('total-registros').textContent=demandas;
+  renderBars();
+}
+async function registrarDemanda(){
+  var tipo=$('dem-tipo').value, bairro=$('dem-bairro').value.trim();
+  if(!tipo||!bairro){ showToast('⚠️ Preencha o tipo e o bairro'); return; }
+  var pt=await geocodar(bairro);
+  var st=await salvarRegistro('demandas',{lat:pt?pt[0]:null,lng:pt?pt[1]:null,tipo:tipo,bairro:bairro,quantidade:$('dem-qtd').value,observacao:$('dem-obs').value.trim()});
+  if(st==='erro'){ showToast('⚠️ Não foi possível enviar agora. Tente de novo.'); return; }
+  demandas++; demandaPorTipo[tipo]=(demandaPorTipo[tipo]||0)+1;
+  $('dem-tipo').value=''; $('dem-bairro').value=''; $('dem-obs').value='';
+  updateStats(); if(window.comMap) carregarComunidade(); showToast(st==='ok'?'✅ Demanda registrada! Obrigado.':'✅ Registrada nesta sessão (banco ainda não conectado).');
+}
+function previewFoto(inp){
+  var f=inp.files&&inp.files[0]; if(!f) return;
+  if(f.type.indexOf('image/')!==0){ showToast('⚠️ Selecione um arquivo de imagem'); inp.value=''; return; }
+  if(f.size>5*1024*1024){ showToast('⚠️ A imagem passa de 5 MB'); inp.value=''; return; }
+  var r=new FileReader();
+  r.onload=function(e){ fotoDataUrl=e.target.result; $('photo-img').src=fotoDataUrl; $('photo-preview').style.display='block'; $('photo-drop').style.display='none'; };
+  r.onerror=function(){ showToast('⚠️ Não foi possível ler a imagem'); };
+  r.readAsDataURL(f);
+}
+function removerFoto(){
+  fotoDataUrl=null; $('den-foto').value=''; $('photo-img').removeAttribute('src');
+  $('photo-preview').style.display='none'; $('photo-drop').style.display='flex';
+}
+function openFoto(src){
+  $('modal-content').innerHTML='<button class="close-btn" onclick="closeModal()">✕</button><h2>Foto da denúncia</h2><img src="'+src+'" alt="Foto da denúncia" style="width:100%;border-radius:1rem;margin-top:1rem">';
+  $('modal-overlay').classList.add('open');
+}
+async function registrarDenuncia(){
+  var tipo=$('den-tipo').value, local=$('den-local').value.trim();
+  if(!tipo||!local){ showToast('⚠️ Preencha o tipo e o local'); return; }
+  var foto=fotoDataUrl, vol=$('den-volume').value;
+  var pt=await geocodar(local);
+  var st=await salvarRegistro('denuncias',{lat:pt?pt[0]:null,lng:pt?pt[1]:null,tipo:tipo,localizacao:local,volume:vol,descricao:$('den-desc').value.trim(),tem_foto:!!foto});
+  if(st==='erro'){ showToast('⚠️ Não foi possível enviar agora. Tente de novo.'); return; }
+  denuncias++;
+  var item=document.createElement('div'); item.className='recent-item';
+  item.innerHTML='<div class="recent-dot"></div><div style="flex:1"><div class="recent-text">'+esc(tipo)+' — '+esc(local)+'</div>'+
+    '<div class="recent-time">Agora mesmo · '+esc(vol)+(foto?' · 📷 com foto':'')+'</div></div>'+
+    (foto?'<img class="recent-thumb" alt="Foto da denúncia" src="'+foto+'">':'');
+  if(foto) item.querySelector('.recent-thumb').addEventListener('click',function(){ openFoto(foto); });
+  $('recent-list').prepend(item);
+  $('den-tipo').value=''; $('den-local').value=''; $('den-desc').value='';
+  removerFoto(); updateStats(); if(window.comMap) carregarComunidade(); showToast(st==='ok'?'🚨 Denúncia enviada! Obrigado.':'🚨 Registrada nesta sessão (banco ainda não conectado).');
+}
+
+/* ---------- pesquisa: consentimento, e-mail e banco de dados ---------- */
+/* Preencha com os dados do seu projeto no Supabase (Project Settings > API). A chave "anon" é pública por natureza; a segurança vem das regras de RLS do arquivo banco-supabase.sql. */
+var BACKEND={url:'https://miqaubeveodxgqfqwvql.supabase.co',key:'sb_publishable_Gbm4W9W3Nlx6QnkLCA75eg_Jfiz5fyj'};
+
+async function salvarRegistro(tabela,dados){
+  if(!BACKEND.url||!BACKEND.key) return 'local';
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/'+tabela,{method:'POST',headers:{'Content-Type':'application/json',apikey:BACKEND.key,Prefer:'return=minimal'},body:JSON.stringify(dados)});
+    return r.ok?'ok':'erro';
+  }catch(e){ return 'erro'; }
+}
+
+/* ---------- educação ambiental: anatomia do móvel ---------- */
+var MOVEIS=[
+ {e:'🛋️',n:'Sofá e estofados',c:'Reformável',k:'ok',m:['Estrutura de madeira ou MDF','Espuma de poliuretano','Tecido, couro ou corino','Molas de aço','Grampos e pregos'],q:'Com a estrutura firme e sem cupim, vale reformar trocando espuma e tecido. Madeira e aço podem ser separados; espuma e tecido usados costumam virar rejeito.'},
+ {e:'🚪',n:'Guarda-roupa e armário',c:'Reformável se estiver seco',k:'ok',m:['Painéis de MDF ou MDP','Revestimento melamínico','Dobradiças e corrediças de metal','Puxadores','Espelho ou vidro'],q:'Painel seco e sem inchaço pode ser reaproveitado ou reformado. MDF que molhou incha e não se recupera. Metais e vidro seguem para reciclagem.'},
+ {e:'🪑',n:'Mesa de madeira maciça',c:'Alto reaproveitamento',k:'ok',m:['Madeira maciça','Verniz ou laca','Parafusos e ferragens'],q:'É o caso mais favorável: lixar, consertar e envernizar costuma bastar. Em fim de vida, a madeira ainda pode servir de matéria-prima para marcenaria.'},
+ {e:'💺',n:'Cadeira com assento',c:'Parcialmente reciclável',k:'mid',m:['Estrutura de madeira, metal ou plástico','Espuma no assento','Tecido ou courino','Parafusos'],q:'A estrutura costuma ser reaproveitada e o assento trocado. Metal e plástico vão para reciclagem; espuma e tecido desgastados são rejeito.'},
+ {e:'🛏️',n:'Colchão',c:'Difícil reaproveitamento',k:'low',m:['Espuma de poliuretano ou molas de aço','Tecidos e mantas','Cola e fibras'],q:'Usado, em geral não é reformado nem doado. O aço das molas é reciclável, mas exige desmontagem. Consulte a logística reversa do fabricante.'}
+];
+function renderMoveis(){
+  var g=$('anat-grid'); if(!g) return;
+  g.innerHTML=MOVEIS.map(function(x){
+    return '<div class="anat-card" tabindex="0" role="button" aria-label="'+esc(x.n)+': ver materiais">'+
+      '<span class="anat-emoji">'+x.e+'</span><h4>'+esc(x.n)+'</h4><span class="anat-badge '+x.k+'">'+esc(x.c)+'</span>'+
+      '<span class="anat-hint">Passe o cursor ou toque ↗</span>'+
+      '<div class="anat-tip"><b>Materiais</b><div class="anat-chips">'+x.m.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div><b>Como se classifica</b><p>'+esc(x.q)+'</p></div></div>';
+  }).join('');
+  Array.prototype.forEach.call(g.children,function(c){
+    c.addEventListener('click',function(){ var on=c.classList.contains('on'); Array.prototype.forEach.call(g.children,function(o){o.classList.remove('on');}); if(!on) c.classList.add('on'); });
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){
+  renderMoveis();
+});
+
+/* ---------- mapa da comunidade (dados do Supabase) ---------- */
+var comMap=null, comLayers={den:null,dem:null};
+async function geocodar(txt){
+  try{ var pt=await geocode(txt+', Maringá, PR'); return pt?[Math.round(pt[0]*1000)/1000,Math.round(pt[1]*1000)/1000]:null; }catch(e){ return null; }
+}
+async function lerTabela(tab,cols){
+  if(!BACKEND.url||!BACKEND.key) return null;
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/'+tab+'?select='+cols+'&lat=not.is.null&order=criado_em.desc&limit=1000',{headers:{apikey:BACKEND.key}});
+    return r.ok?await r.json():null;
+  }catch(e){ return null; }
+}
+function agrupar(rows){
+  var g={}; rows.forEach(function(r){ var k=r.lat+','+r.lng; if(!g[k]) g[k]={lat:r.lat,lng:r.lng,n:0,tipos:{}}; g[k].n++; g[k].tipos[r.tipo]=(g[k].tipos[r.tipo]||0)+1; });
+  return Object.keys(g).map(function(k){ return g[k]; });
+}
+function desenharGrupos(grupos,cor){
+  var lg=L.layerGroup();
+  grupos.forEach(function(g){
+    var t=Object.keys(g.tipos).map(function(x){ return esc(x)+' ('+g.tipos[x]+')'; }).join('<br>');
+    L.circleMarker([g.lat,g.lng],{radius:8+Math.min(g.n,12)*1.5,color:'#fff',weight:2,fillColor:cor,fillOpacity:.85})
+      .bindPopup('<b>'+g.n+' registro'+(g.n>1?'s':'')+'</b><br>'+t).addTo(lg);
+  });
+  return lg;
+}
+function aplicarCamadas(){
+  [['den','com-den'],['dem','com-dem']].forEach(function(x){
+    var l=comLayers[x[0]]; if(!l) return;
+    if($(x[1]).checked){ if(!comMap.hasLayer(l)) l.addTo(comMap); } else if(comMap.hasLayer(l)) comMap.removeLayer(l);
+  });
+}
+async function carregarComunidade(){
+  var msg=$('com-msg');
+  if(!BACKEND.url||!BACKEND.key){ msg.textContent='O banco de dados ainda não está conectado.'; return; }
+  var a=await lerTabela('denuncias','tipo,volume,lat,lng,criado_em'), b=await lerTabela('demandas','tipo,bairro,quantidade,lat,lng,criado_em');
+  if(a===null&&b===null){ msg.textContent='Não foi possível carregar os registros agora. Tente atualizar em instantes.'; return; }
+  a=a||[]; b=b||[];
+  ['den','dem'].forEach(function(k){ if(comLayers[k]&&comMap.hasLayer(comLayers[k])) comMap.removeLayer(comLayers[k]); });
+  comLayers.den=desenharGrupos(agrupar(a),'#d94f3d'); comLayers.dem=desenharGrupos(agrupar(b),'#e0a24a');
+  $('com-n-den').textContent=a.length; $('com-n-dem').textContent=b.length;
+  aplicarCamadas();
+  var pts=a.concat(b).map(function(r){ return [r.lat,r.lng]; });
+  if(pts.length){ comMap.fitBounds(pts,{padding:[50,50],maxZoom:15}); msg.textContent='Mostrando '+pts.length+' registro'+(pts.length>1?'s':'')+' com localização aproximada.'; }
+  else msg.textContent='Ainda não há registros no mapa. Seja a primeira pessoa a contribuir! 💚';
+}
+function initCom(){
+  $('com-map').innerHTML='';
+  comMap=L.map('com-map',{zoomControl:false,scrollWheelZoom:false}).setView(CENTER,12);
+  L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}).addTo(comMap);
+  L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9}).addTo(comMap);
+  L.control.zoom({position:'bottomright'}).addTo(comMap);
+  comMap.on('focus',function(){ comMap.scrollWheelZoom.enable(); });
+  comMap.on('blur',function(){ comMap.scrollWheelZoom.disable(); });
+  $('com-den').addEventListener('change',aplicarCamadas); $('com-dem').addEventListener('change',aplicarCamadas);
+  $('com-refresh').addEventListener('click',carregarComunidade);
+  watchSize(comMap); carregarComunidade();
+}
+
+/* ---------- chat IA ---------- */
+var SYSTEM_PROMPT = 'Você é o assistente do Re.Ciclo, plataforma de georreferenciamento de resíduos inservíveis em Maringá-PR.\n\n'+
+'CONTEXTO sobre Maringá (confirme sempre as regras atuais com a Prefeitura):\n'+
+'- Há pontos de entrega fixos, principalmente para sucata eletrônica (ex.: Paço Municipal, Câmara Municipal, Tiro de Guerra, 4º BPM), vidro, óleo, lâmpadas e pilhas; a rede se concentra perto do centro\n'+
+'- Para móveis e colchões, as opções divulgadas são a Pedreira Municipal e a coleta de itens grandes solicitada pelo 156\n'+
+'- O primeiro ecoponto fixo para inservíveis (Jardim Piatã) teve o recebimento suspenso após um incêndio; o status atual deve ser confirmado\n'+
+'- A cidade gera ~2.853 toneladas de resíduos/dia, com ~4% reciclados (PMGIRSU 2017)\n'+
+'- Entulho de construção segue legislação própria (CONAMA 307) e não é foco da plataforma\n\n'+
+'Seu papel:\n- Orientar sobre descarte correto de inservíveis, priorizando reaproveitamento e economia circular\n'+
+'- Quando não houver solução local, orientar o registro de demanda na plataforma\n'+
+'- Nunca inventar endereços ou horários; se não souber, indique o 156 ou a Secretaria de Meio Ambiente\n'+
+'- Ser direto, acolhedor e contextualizado em Maringá\n\nResponda em português, de forma concisa (máximo 3 parágrafos).';
+var chatHistory=[];
+function appendMsg(role,text){
+  var msgs=$('chat-messages'), div=document.createElement('div'); div.className='msg '+role;
+  div.innerHTML='<div class="msg-avatar">'+(role==='bot'?'🤖':'EU')+'</div><div class="msg-bubble">'+esc(text).replace(/\n/g,'<br>')+'</div>';
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight; return div;
+}
+async function sendMessage(){
+  var input=$('chat-input'), msg=input.value.trim(); if(!msg) return;
+  input.value=''; appendMsg('user',msg); chatHistory.push({role:'user',content:msg});
+  var typing=appendMsg('bot','...'); typing.querySelector('.msg-bubble').style.opacity='.5';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYSTEM_PROMPT,messages:chatHistory})});
+    var data=await res.json();
+    var reply=(data.content||[]).map(function(i){return i.type==='text'?i.text:'';}).join('')||'Desculpe, não consegui responder agora.';
+    typing.remove(); appendMsg('bot',reply); chatHistory.push({role:'assistant',content:reply});
+  }catch(e){ typing.remove(); appendMsg('bot','Erro de conexão. Tente novamente em instantes.'); }
+}
+function sendChip(chip){ $('chat-input').value=chip.textContent; sendMessage(); }
+
+/* ═══════════════════════════════════════════════════════════════
+   PARTE 2 — MAPAS (Leaflet, com plano B se a biblioteca falhar)
+═══════════════════════════════════════════════════════════════ */
+var VOYAGER='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
+var DARK='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+var SAT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+var SAT_LABELS='https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+var OSM='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+var ATTR_C='Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors';
+var ATTR_O='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+var ATTR_E='Tiles © Esri — Maxar, Earthstar Geographics';
+var FAIL_MSG='Não foi possível carregar o mapa (verifique a conexão ou tente recarregar). A lista e o botão "Como chegar" de cada ponto continuam funcionando.';
+
+function mapFail(id){ var el=$(id); if(el) el.innerHTML='<div class="map-fail">'+FAIL_MSG+'</div>'; }
+function loadScript(src){ return new Promise(function(res,rej){ var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+function loadCss(href){ var l=document.createElement('link'); l.rel='stylesheet'; l.href=href; document.head.appendChild(l); }
+function leafletCssOk(){
+  var d=document.createElement('div'); d.className='leaflet-pane'; d.style.visibility='hidden'; document.body.appendChild(d);
+  var ok=getComputedStyle(d).position==='absolute'; document.body.removeChild(d); return ok;
+}
+async function ensureLeaflet(){
+  if(!window.L){
+    var srcs=['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
+    for(var i=0;i<srcs.length;i++){ try{ await loadScript(srcs[i]); }catch(e){} if(window.L) break; }
+  }
+  if(!window.L) return false;
+  if(!leafletCssOk()){
+    loadCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');
+    loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+    await new Promise(function(r){ setTimeout(r,700); });
+  }
+  return true;
+}
+function smartTiles(url,attr,map){
+  var layer=L.tileLayer(url,{maxZoom:19,attribution:attr}), errs=0, done=false;
+  layer.on('tileerror',function(){
+    if(done) return; errs++;
+    if(errs>=6){ done=true; if(map.hasLayer(layer)) map.removeLayer(layer); L.tileLayer(OSM,{maxZoom:19,attribution:ATTR_O}).addTo(map).bringToBack(); }
+  });
+  return layer;
+}
+function watchSize(map){
+  if(!window.ResizeObserver) return;
+  try{ new ResizeObserver(function(){ map.invalidateSize(); }).observe(map.getContainer()); }catch(e){}
+}
+function pinIcon(p,pulse){
+  return L.divIcon({className:'pin-wrap',
+    html:'<div class="pin">'+(pulse?'<i class="pin-pulse"></i>':'')+'<b class="pin-body"></b><span class="pin-ico">'+p.ico+'</span></div>',
+    iconSize:[34,44],iconAnchor:[17,40],popupAnchor:[0,-36]});
+}
+function pevBounds(){ return L.latLngBounds(PEVS.map(function(p){return [p.lat,p.lng];})); }
+
+function initHero(){
+  $('hero-map').innerHTML='';
+  heroMap=L.map('hero-map',{zoomControl:false,scrollWheelZoom:false,attributionControl:false}).setView(CENTER,13);
+  var heroSat=L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}), heroErr=0;
+  heroSat.on('tileerror',function(){ if(++heroErr===6){ heroMap.removeLayer(heroSat); L.tileLayer(OSM,{maxZoom:19,attribution:ATTR_O}).addTo(heroMap).bringToBack(); } });
+  heroSat.addTo(heroMap);
+  L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9}).addTo(heroMap);
+  L.control.attribution({prefix:false,position:'bottomright'}).addTo(heroMap);
+  PEVS.forEach(function(p){ heroMarkers[p.id]=L.marker([p.lat,p.lng],{icon:pinIcon(p,true)}).addTo(heroMap).bindPopup(popupHtml(p)); });
+  heroMap.fitBounds(pevBounds(),{padding:[60,60],maxZoom:14});
+  watchSize(heroMap);
+  setTimeout(function(){ heroMap.invalidateSize(); heroMap.fitBounds(pevBounds(),{padding:[60,60],maxZoom:14}); },900);
+}
+function initMain(){
+  $('main-map').innerHTML='';
+  mainMap=L.map('main-map',{zoomControl:false,scrollWheelZoom:false}).setView(CENTER,13);
+  var baseMapa=smartTiles(VOYAGER,ATTR_C,mainMap), baseSat=L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}), baseDark=smartTiles(DARK,ATTR_C,mainMap); baseDark.options.maxNativeZoom=16;
+  baseMapa.addTo(mainMap);
+  var bases={}; bases['🗺️ Mapa']=baseMapa; bases['🛰️ Satélite']=baseSat; bases['🌙 Escuro']=baseDark;
+  L.control.layers(bases,null,{position:'topright',collapsed:false}).addTo(mainMap);
+  L.control.zoom({position:'bottomright'}).addTo(mainMap);
+  L.control.scale({imperial:false,position:'bottomleft'}).addTo(mainMap);
+  mainMap.on('focus',function(){ mainMap.scrollWheelZoom.enable(); });
+  mainMap.on('blur',function(){ mainMap.scrollWheelZoom.disable(); });
+  covLayer=L.layerGroup();
+  PEVS.forEach(function(p){
+    var m=L.marker([p.lat,p.lng],{icon:pinIcon(p,false)}).bindPopup(popupHtml(p),{maxWidth:280});
+    m.on('click',function(){ selectPEV(p.id,false); });
+    mainMarkers[p.id]=m;
+  });
+  mainMap.fitBounds(pevBounds(),{padding:[50,50],maxZoom:14});
+  applyFilter();
+  if($('toggle-cov').checked) toggleCov(true);
+  watchSize(mainMap);
+}
+
+/* Ajuste de posição pelo endereço (Nominatim/OSM) — falha silenciosa se não houver rede */
+function movePin(p){
+  if(heroMarkers[p.id]) heroMarkers[p.id].setLatLng([p.lat,p.lng]).setPopupContent(popupHtml(p));
+  if(mainMarkers[p.id]) mainMarkers[p.id].setLatLng([p.lat,p.lng]).setPopupContent(popupHtml(p));
+  if(mainMap && covLayer && mainMap.hasLayer(covLayer)) buildCov();
+  onPevsMoved();
+}
+async function geocode(q){
+  var u='https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&bounded=1&viewbox=-52.06,-23.32,-51.80,-23.53&q='+encodeURIComponent(q);
+  var r=await fetch(u,{headers:{'Accept':'application/json'}});
+  if(!r.ok) throw new Error('http '+r.status);
+  var j=await r.json();
+  if(!j.length) return null;
+  var pt=[parseFloat(j[0].lat),parseFloat(j[0].lon)];
+  return dist(pt,CENTER)<9000 ? pt : null;
+}
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+async function refinePositions(){
+  for(var i=0;i<PEVS.length;i++){
+    var p=PEVS[i];
+    try{
+      var pt=await geocode(p.q), prec='end';
+      if(!pt){ await sleep(1100); pt=await geocode(p.qs); prec='rua'; }
+      if(pt){ p.lat=pt[0]; p.lng=pt[1]; p.prec=prec; movePin(p); }
+    }catch(e){ return; }
+    await sleep(1100);
+  }
+  if(heroMap){ try{ heroMap.fitBounds(pevBounds(),{padding:[60,60],maxZoom:14}); }catch(e){} }
+}
+
+/* ---------- MODELO IDEAL (sobre mapa real) ---------- */
+function initIdeal(){
+  $('ideal-map').innerHTML='';
+  var LAT0=CENTER[0], LNG0=CENTER[1];
+  var mLat=110574, mLng=111320*Math.cos(LAT0*Math.PI/180);
+  function toLL(x,y){ return [LAT0+y/mLat, LNG0+x/mLng]; }
+  function toXY(ll){ return [(ll[1]-LNG0)*mLng,(ll[0]-LAT0)*mLat]; }
+  var A=6500, B=5800;
+  function inEll(x,y){ return (x/A)*(x/A)+(y/B)*(y/B)<=1; }
+
+  var map=L.map('ideal-map',{zoomControl:false,scrollWheelZoom:false}).setView(CENTER,13);
+  idealMapRef=map;
+  var idSat=L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}), idErr=0;
+  idSat.on('tileerror',function(){ if(++idErr===6){ map.removeLayer(idSat); L.tileLayer(OSM,{maxZoom:19,attribution:ATTR_O}).addTo(map).bringToBack(); } });
+  idSat.addTo(map);
+  L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9}).addTo(map);
+  L.control.zoom({position:'bottomright'}).addTo(map);
+  L.control.scale({imperial:false,position:'bottomleft'}).addTo(map);
+  map.on('focus',function(){ map.scrollWheelZoom.enable(); });
+  map.on('blur',function(){ map.scrollWheelZoom.disable(); });
+
+  var ring=[]; for(var i=0;i<72;i++){ var a=i/72*2*Math.PI; ring.push(toLL(A*Math.cos(a),B*Math.sin(a))); }
+  var outline=L.polygon(ring,{color:'#ffffff',weight:2.5,dashArray:'6 6',fillOpacity:0,interactive:false}).addTo(map);
+  function fit(){ map.invalidateSize(); map.fitBounds(outline.getBounds(),{padding:[10,10]}); }
+  setTimeout(fit,300);
+  watchSize(map);
+
+  var r0=rng(42);
+  function gauss(){ var u=0,v=0; while(!u)u=r0(); while(!v)v=r0(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  var dots=[];
+  while(dots.length<700){
+    var x,y;
+    if(r0()<0.65){ x=gauss()*2800; y=gauss()*2600; } else { x=(r0()*2-1)*A; y=(r0()*2-1)*B; }
+    if(inEll(x,y)) dots.push({x:x,y:y,ll:toLL(x,y)});
+  }
+  var canvas=L.canvas({padding:.5});
+  var dotLayer=L.layerGroup().addTo(map);
+  dots.forEach(function(d){ d.mk=L.circleMarker(d.ll,{renderer:canvas,radius:3,weight:.8,color:'#fff',opacity:.85,fillColor:'#ff6a4d',fillOpacity:.95,interactive:false}).addTo(dotLayer); });
+  var covGroup=L.layerGroup().addTo(map), pevGroup=L.layerGroup().addTo(map);
+
+  var cache={};
+  function kmeans(k){
+    if(cache[k]) return cache[k];
+    var rnd=rng(7+k), first=dots[Math.floor(rnd()*dots.length)];
+    var c=[{x:first.x,y:first.y}];
+    while(c.length<k){
+      var d2=dots.map(function(d){ var m=Infinity; c.forEach(function(p){ var q=(d.x-p.x)*(d.x-p.x)+(d.y-p.y)*(d.y-p.y); if(q<m)m=q; }); return m; });
+      var sum=d2.reduce(function(a,b){return a+b;},0), t=rnd()*sum, j=0;
+      for(;j<d2.length-1;j++){ t-=d2[j]; if(t<=0)break; }
+      c.push({x:dots[j].x,y:dots[j].y});
+    }
+    for(var it=0;it<15;it++){
+      var acc=c.map(function(){return {x:0,y:0,n:0};});
+      dots.forEach(function(d){
+        var b=0,bd=Infinity; c.forEach(function(p,ix){ var q=(d.x-p.x)*(d.x-p.x)+(d.y-p.y)*(d.y-p.y); if(q<bd){bd=q;b=ix;} });
+        acc[b].x+=d.x; acc[b].y+=d.y; acc[b].n++;
+      });
+      c=c.map(function(p,ix){ return acc[ix].n?{x:acc[ix].x/acc[ix].n,y:acc[ix].y/acc[ix].n}:p; });
+    }
+    cache[k]=c.map(function(p){ return {x:p.x,y:p.y,ll:toLL(p.x,p.y)}; });
+    return cache[k];
+  }
+
+  var st={mode:'atual',radius:1500,hab:25000,cov:true,dots:true,custom:[]};
+  function getP(){
+    if(st.mode==='atual') return PEVS.map(function(p){ var xy=toXY([p.lat,p.lng]); return {x:xy[0],y:xy[1],ll:[p.lat,p.lng]}; });
+    if(st.mode==='ideal') return kmeans(Math.max(1,Math.round(POP/st.hab)));
+    return st.custom;
+  }
+  function numIcon(label,atual){ return L.divIcon({className:'num-pin'+(atual?' atual':''),html:'<span>'+label+'</span>',iconSize:[28,28],iconAnchor:[14,14]}); }
+  function kmTxt(m){ return (m/1000).toFixed(1).replace('.',',')+' km'; }
+
+  function render(){
+    var P=getP(), R=st.radius, atual=st.mode==='atual', cov=0, sum=0;
+    dots.forEach(function(d){
+      var m=Infinity; for(var i=0;i<P.length;i++){ var q=Math.hypot(d.x-P[i].x,d.y-P[i].y); if(q<m)m=q; }
+      d.m=m; if(m<=R)cov++; if(isFinite(m))sum+=m;
+      d.mk.setStyle({fillColor:m<=R?'#63e04a':'#ff6a4d'});
+    });
+    var pct=Math.round(cov/dots.length*100), avg=P.length?sum/dots.length:null;
+
+    if(st.dots){ if(!map.hasLayer(dotLayer)) dotLayer.addTo(map); } else map.removeLayer(dotLayer);
+    covGroup.clearLayers(); pevGroup.clearLayers();
+    P.forEach(function(p,i){
+      if(st.cov) L.circle(p.ll,{radius:R,color:atual?'#ffd27a':'#a8e63d',weight:1.5,opacity:.9,fillColor:atual?'#e0a24a':'#a8e63d',fillOpacity:.18,interactive:false}).addTo(covGroup);
+      var mk=L.marker(p.ll,{icon:numIcon(atual?'E':(i+1),atual),draggable:st.mode==='custom',keyboard:false}).addTo(pevGroup);
+      if(atual) mk.bindTooltip(PEVS[i].nome);
+      if(st.mode==='custom'){
+        mk.on('click',function(){ st.custom.splice(i,1); render(); });
+        mk.on('dragend',function(e){ var ll=e.target.getLatLng(), xy=toXY([ll.lat,ll.lng]); st.custom[i]={x:xy[0],y:xy[1],ll:[ll.lat,ll.lng]}; render(); });
+      }
+    });
+
+    var n=P.length;
+    $('im-l1').textContent = atual?'Pontos de sucata eletrônica':'PEVs p/ inservíveis';
+    $('im-l2').textContent = atual?'Atendida (só eletrônicos)':'População atendida';
+    $('im-pevs').textContent=n;
+    $('im-cov').textContent=pct+'%';
+    $('im-bar-fill').style.width=pct+'%';
+    $('im-bar-fill').style.background=pct>=80?'#2d5016':(pct>=50?'#c4874a':'#d94f3d');
+    $('im-dist').textContent=avg===null?'sem PEV':kmTxt(avg);
+    $('im-hab').textContent=n?fmt(Math.round(POP/n)):'—';
+
+    var msg;
+    if(atual){
+      msg='Hoje há <b>'+n+' pontos fixos de sucata eletrônica</b> mapeados, concentrados perto do centro: só <b>'+pct+'%</b> da população simulada mora a até '+kmTxt(R)+' de um deles. Para móveis e colchões, as opções divulgadas são a Pedreira Municipal e a coleta pelo 156.';
+    } else if(st.mode==='ideal'){
+      msg='Com <b>'+n+' PEVs</b> (1 a cada '+fmt(st.hab)+' hab.) e raio de '+kmTxt(R)+', cerca de <b>'+pct+'%</b> da população teria um ponto por perto.'+(pct<80?' Aumente o raio ou reduza os habitantes por PEV para melhorar.':' Uma boa cobertura!');
+    } else {
+      msg=n===0?'Clique no mapa, dentro da linha tracejada, para posicionar PEVs. Arraste para mover e clique em um ponto para removê-lo.'
+        :'Sua rede tem <b>'+n+' PEV'+(n>1?'s':'')+'</b> e atende cerca de <b>'+pct+'%</b> da população simulada. Arraste para mover; clique em um ponto para removê-lo.';
+    }
+    $('im-msg').innerHTML=msg;
+  }
+
+  function setMode(m){
+    st.mode=m;
+    document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.toggle('active',b.getAttribute('data-mode')===m); });
+    $('im-hab-ctrl').style.display=m==='ideal'?'block':'none';
+    $('im-clear').style.display=m==='custom'?'inline-block':'none';
+    map.getContainer().style.cursor=m==='custom'?'crosshair':'';
+    render();
+  }
+  document.querySelectorAll('.mode-btn').forEach(function(b){ b.addEventListener('click',function(){ setMode(b.getAttribute('data-mode')); }); });
+  $('im-radius').addEventListener('input',function(e){ st.radius=+e.target.value; $('im-radius-val').textContent=fmt(st.radius)+' m'; render(); });
+  $('im-habrange').addEventListener('input',function(e){ st.hab=+e.target.value; $('im-habrange-val').textContent=fmt(st.hab); render(); });
+  $('im-showcov').addEventListener('change',function(e){ st.cov=e.target.checked; render(); });
+  $('im-showdots').addEventListener('change',function(e){ st.dots=e.target.checked; render(); });
+  $('im-clear').addEventListener('click',function(){ st.custom=[]; render(); });
+  map.on('click',function(e){
+    if(st.mode!=='custom') return;
+    var xy=toXY([e.latlng.lat,e.latlng.lng]);
+    if(!inEll(xy[0],xy[1])){ showToast('⚠️ Clique dentro da área tracejada'); return; }
+    if(st.custom.length>=60){ showToast('⚠️ Máximo de 60 pontos no modelo'); return; }
+    st.custom.push({x:xy[0],y:xy[1],ll:[e.latlng.lat,e.latlng.lng]});
+    render();
+  });
+  onPevsMoved=function(){ if(st.mode==='atual') render(); };
+  render();
+}
+
+async function initMaps(){
+  var ok=false;
+  try{ ok=await ensureLeaflet(); }catch(e){ ok=false; }
+  if(!ok){ ['hero-map','main-map','ideal-map','com-map'].forEach(mapFail); $('im-msg').textContent='O mapa não carregou, então a simulação está indisponível.'; return; }
+  try{ initHero(); }catch(e){ console.error('hero',e); mapFail('hero-map'); }
+  try{ initMain(); }catch(e){ console.error('main',e); mapFail('main-map'); }
+  try{ initIdeal(); }catch(e){ console.error('ideal',e); mapFail('ideal-map'); $('im-msg').textContent='Não foi possível iniciar a simulação.'; }
+  try{ initCom(); }catch(e){ console.error('com',e); mapFail('com-map'); }
+  setTimeout(function(){ [heroMap,mainMap,idealMapRef,comMap].forEach(function(m){ if(m) m.invalidateSize(); }); },400);
+  refinePositions();
+}
+
+/* ═══════════ INICIALIZAÇÃO ═══════════ */
+$('search-input').addEventListener('input',function(){ renderPEVList(); applyFilter(); });
+$('toggle-cov').addEventListener('change',function(e){ toggleCov(e.target.checked); });
+renderPEVList();
+updateStats();
+initNavSpy();
+initMaps();
+</script>
+</body>
+</html>
