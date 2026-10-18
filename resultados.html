@@ -57,7 +57,7 @@ var SECS=[
  ['Como poderia funcionar',[['dist','Distância máxima para entregar um móvel','s'],['formato','Formato preferido','s'],['doaria','Disposição para doar móvel em bom estado (1 a 5)','n'],['compra','Compraria móvel reformado por cooperativa','s'],['desc','Desconto que tornaria a compra atraente','s'],['incent','O que faria usar um ponto de entrega','m'],['taxa','Pagaria taxa pela coleta em casa','s']]],
  ['Respostas abertas',[['relato','Maior dificuldade já enfrentada','t'],['sugest','Sugestões','t']]]
 ];
-var D=null, $=function(i){return document.getElementById(i);};
+var D=null, PW='', $=function(i){return document.getElementById(i);};
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function pct(n,b){ return b?Math.round(n*100/b):0; }
 function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
@@ -95,14 +95,24 @@ function render(){
   h+=bloco('Demandas por bairro (10 mais citados)','',dm.length?bars(contar(dm.map(function(r){return r.bairro;})).slice(0,10),dm.length):'<div class="sub">—</div>');
   h+=bloco('Denúncias por tipo de resíduo',dn.length+' registros',dn.length?bars(contar(dn.map(function(r){return r.tipo;})),dn.length):'<div class="sub">—</div>');
   h+=bloco('Denúncias por local (10 mais citados)','',dn.length?bars(contar(dn.map(function(r){return r.localizacao;})).slice(0,10),dn.length):'<div class="sub">—</div>');
+  h+='<h2>Lista de denúncias</h2>'+(dn.length?dn.slice().reverse().map(function(r){ return '<div class="blk"><h3>'+esc(r.tipo)+' — '+esc(r.localizacao)+'</h3><small>'+esc(r.volume||'')+' · '+new Date(r.criado_em).toLocaleString('pt-BR')+'</small>'+(r.descricao?'<div class="txt">'+esc(r.descricao)+'</div>':'')+(r.tem_foto?'<button onclick="verFoto('+r.id+',this)">📷 Ver foto</button><div id="foto-'+r.id+'"></div>':'<small>Sem foto</small>')+'</div>'; }).join(''):'<div class="sub">—</div>');
   $('corpo').innerHTML=h;
+}
+async function verFoto(id,btn){
+  btn.textContent='Carregando…';
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/rpc/foto_denuncia',{method:'POST',headers:{'Content-Type':'application/json',apikey:BACKEND.key},body:JSON.stringify({senha:PW,denuncia_id:id})});
+    var f=r.ok?await r.json():null;
+    if(!f){ btn.textContent='Foto indisponível'; return; }
+    $('foto-'+id).innerHTML='<img alt="Foto da denúncia" src="'+f+'" style="width:100%;max-width:520px;border-radius:.8rem;margin-top:.6rem">'; btn.style.display='none';
+  }catch(e){ btn.textContent='Erro ao carregar'; }
 }
 async function carregar(){
   $('msg').textContent='Carregando…';
   try{
     var r=await fetch(BACKEND.url+'/rest/v1/rpc/resultados',{method:'POST',headers:{'Content-Type':'application/json',apikey:BACKEND.key},body:JSON.stringify({senha:$('pw').value})});
     if(!r.ok){ $('msg').textContent='Senha incorreta ou banco indisponível.'; return; }
-    D=await r.json(); $('msg').textContent=''; $('login').style.display='none'; $('out').style.display='block'; render();
+    PW=$('pw').value; D=await r.json(); $('msg').textContent=''; $('login').style.display='none'; $('out').style.display='block'; render();
   }catch(e){ $('msg').textContent='Não foi possível conectar. Verifique a internet.'; }
 }
 $('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') carregar(); });
