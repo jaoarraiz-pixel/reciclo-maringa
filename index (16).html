@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Re.Ciclo — Maringá</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1&family=Figtree:wght@400..700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#f0e4f2">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+:root{--ink:#150d28;--paper:#efecf5;--moss:#2a1458;--lime:#ff7a1a;--earth:#c2570a;--mist:#e4dcf2;--red:#d92b5e;--mid:#6b5f85;--card:#fff;--border:#d6cfe3;--shadow:rgba(23,10,51,.12);--abyss:#170a33;--soft:#f8f6fb;--ui:'Bricolage Grotesque',system-ui,sans-serif;--txt:'Newsreader',Georgia,serif;--pad:max(1.5rem,calc((100vw - 1240px)/2))}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scrollbar-color:var(--moss) var(--paper)}
+body{font-family:var(--txt);font-size:1.0625rem;line-height:1.6;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+::selection{background:var(--lime);color:var(--moss)}
+section,.ideal-wrap{scroll-margin-top:72px}
+a{cursor:pointer}
+h1,h2,h3,h4,.section-title,.stat-num,.prob-num,.metric-num-large,.im-stat b,.nav-logo,.footer-logo{font-family:var(--ui);font-weight:700;letter-spacing:-.03em;text-wrap:balance}
+button,input,select,textarea,label,.chip,.filter-btn,.pev-type-badge,.anat-badge,.pp-badge,.anat-tip b,.pp-btn,.pev-link,.near-card{font-family:var(--ui)}
+p{text-wrap:pretty}
+.priv,.map-note,.ideal-note,.anat-note,.com-msg{font-family:var(--txt)}
+:focus-visible{outline:3px solid var(--moss);outline-offset:2px}
+nav :focus-visible,#hero :focus-visible,#dados :focus-visible,footer :focus-visible{outline-color:var(--lime)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.9rem var(--pad);background:rgba(var(--rgb-abyss),.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-logo{font-size:1.45rem;color:var(--soft);text-decoration:none}
+.nav-logo span{color:var(--lime)}
+.nav-links{display:flex;gap:1.9rem;list-style:none}
+.nav-links a{font-family:var(--ui);font-size:.9rem;font-weight:500;color:var(--lilac);text-decoration:none;padding:.35rem 0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--lime)}
+.nav-toggle{display:none;background:none;border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:.6rem;font-size:1.3rem;line-height:1;padding:.4rem .75rem;min-height:44px;cursor:pointer}
+
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1.08fr;align-items:center;padding:8rem calc(var(--pad) + 1.5rem) 5rem var(--pad);gap:5rem;position:relative;overflow:hidden;scroll-margin-top:0;background:var(--moss);color:var(--mist)}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 78% 50%,rgba(var(--rgb-lime),.12),transparent 38%),repeating-radial-gradient(circle at 78% 50%,transparent 0 62px,rgba(255,255,255,.055) 62px 63px)}
+.hero-content{position:relative;z-index:1}
+.hero-tag{display:inline-flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.4rem 1rem;font-family:var(--ui);font-size:.85rem;font-weight:500;color:var(--border);margin-bottom:2rem}
+.hero-tag::before{content:'';width:.5rem;height:.5rem;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(var(--rgb-lime),.25)}
+h1{font-size:clamp(3.1rem,6vw,5.6rem);line-height:.93;letter-spacing:-.045em;color:var(--soft)}
+h1 em{font-style:normal}
+.hero-sub{margin-top:1.8rem;max-width:36ch;font-size:1.3rem;line-height:1.5;color:#c9bde6}
+.hero-ctas{display:flex;gap:.9rem;margin-top:2.6rem;flex-wrap:wrap}
+.btn-primary,.btn-outline{border-radius:.7rem;padding:.95rem 1.7rem;font-family:var(--ui);font-size:1rem;font-weight:600;cursor:pointer;transition:transform .18s,box-shadow .2s,background .2s,color .2s}
+.btn-primary{background:var(--lime);color:var(--moss);border:none;box-shadow:0 10px 30px rgba(var(--rgb-lime),.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(var(--rgb-lime),.38)}
+.btn-outline{background:transparent;color:var(--mist);border:1.5px solid rgba(255,255,255,.35)}
+.btn-outline:hover{background:var(--soft);color:var(--moss)}
+.hero-stats{display:flex;gap:0;margin-top:3.5rem;padding-top:1.8rem;border-top:1px solid rgba(255,255,255,.16)}
+.stat-item{display:flex;flex-direction:column;gap:.2rem;padding-right:2.4rem}
+.stat-item+.stat-item{padding-left:2.4rem;border-left:1px solid rgba(255,255,255,.16)}
+.stat-num{font-size:2.8rem;line-height:1;color:var(--lime)}
+.stat-label{font-family:var(--ui);font-size:.85rem;color:var(--lilac)}
+.hero-visual{position:relative;z-index:1;min-width:0}
+.map-preview{position:relative;width:100%;height:600px;border-radius:17rem 17rem 1.5rem 1.5rem;overflow:hidden;background:#3a2078;box-shadow:18px 18px 0 var(--lime),0 40px 90px rgba(0,0,0,.4)}
+#hero-map{position:absolute;inset:0;z-index:0}
+.hero-chip{position:absolute;z-index:500;display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-radius:.6rem;padding:.55rem .95rem;font-family:var(--ui);font-size:.82rem;font-weight:600;color:var(--moss);box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none}
+.hero-chip.c1{bottom:4.6rem;left:1.25rem}
+.hero-chip.c2{bottom:1.25rem;left:1.25rem;color:var(--red)}
+.hero-chip i{width:.6rem;height:.6rem;border-radius:50%;display:inline-block}
+.hero-chip.c1 i{background:var(--lime);box-shadow:0 0 0 4px rgba(var(--rgb-lime),.3)}
+.hero-chip.c2 i{background:var(--red);box-shadow:0 0 0 4px rgba(217,43,94,.25)}
+
+section{padding:7rem var(--pad)}
+.section-label{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--ui);font-size:.95rem;font-weight:600;color:var(--mid);margin-bottom:1.1rem}
+.section-label::before{content:'';width:1.6rem;height:3px;background:var(--lime)}
+.section-title{font-size:clamp(2.3rem,4.8vw,4.1rem);line-height:.98;color:var(--moss)}
+.section-body{font-size:1.2rem;line-height:1.6;color:var(--mid);max-width:50ch;margin-top:1.3rem}
+
+#problema{background:var(--soft)}
+.problema-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem 5rem;margin-top:4rem}
+.prob-card{border-top:2px solid var(--moss);padding-top:1.6rem}
+.prob-icon,.metric-icon{display:none}
+.prob-num{font-size:clamp(3.6rem,7vw,6rem);line-height:.9;color:var(--moss);letter-spacing:-.05em}
+.prob-card h3{font-size:1.3rem;line-height:1.2;color:var(--ink);margin:1rem 0 .6rem}
+.prob-card p{font-size:1.05rem;color:#55487a;line-height:1.55;max-width:46ch}
+.prob-card:last-child{background:var(--lime);border:none;border-radius:1.25rem;padding:2rem}
+.prob-card:last-child .prob-num,.prob-card:last-child h3,.prob-card:last-child p{color:var(--moss)}
+
+#mapa{background:var(--paper)}
+.mapa-layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:2rem;margin-top:3rem;align-items:start}
+.mapa-layout>div{min-width:0}
+.mapa-sidebar{display:flex;flex-direction:column;gap:1rem}
+.search-box{position:relative}
+.search-box input{width:100%;padding:.9rem 1rem .9rem 2.9rem;border:1px solid var(--border);border-radius:.7rem;background:#fff;font-size:.95rem;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.search-box input:focus{border-color:var(--moss);box-shadow:0 0 0 3px rgba(var(--rgb-moss),.12)}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;filter:grayscale(1);opacity:.6}
+.filter-label{font-family:var(--ui);font-size:.85rem;font-weight:600;color:var(--mid)}
+.filters{display:flex;flex-wrap:wrap;gap:.5rem}
+.filter-btn{padding:.45rem .95rem;border-radius:.5rem;font-size:.85rem;font-weight:500;border:1px solid var(--border);background:#fff;color:var(--moss);cursor:pointer;transition:all .18s}
+.filter-btn.active,.filter-btn:hover{background:var(--moss);color:var(--lime);border-color:var(--moss)}
+.locate-btn{display:flex;align-items:center;justify-content:center;background:var(--moss);border:none;color:var(--lime);border-radius:.7rem;padding:.85rem 1rem;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s}
+.locate-btn:hover{background:var(--abyss)}
+.near-card{background:var(--lime);border-radius:.9rem;padding:1rem 1.1rem;font-size:.9rem;line-height:1.5;color:var(--moss)}
+.near-card a{display:inline-block;margin-top:.5rem;color:var(--moss);font-weight:700}
+.cov-toggle{display:flex;align-items:center;gap:.5rem;font-size:.88rem;color:var(--ink);cursor:pointer}
+.cov-toggle input,.im-checks input,.im-ctrl input[type=range]{accent-color:var(--moss)}
+.pev-list{display:flex;flex-direction:column;gap:.6rem;overflow-y:auto;max-height:440px;padding:.15rem .3rem .15rem 0}
+.pev-card{background:#fff;border:1px solid var(--border);border-radius:.9rem;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.pev-card.nopin{cursor:default}
+.pev-card:hover,.pev-card.selected{border-color:var(--moss);box-shadow:inset 4px 0 0 var(--lime)}
+.pev-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
+.pev-name{font-family:var(--ui);font-weight:600;font-size:1rem;letter-spacing:-.01em;color:var(--moss)}
+.pev-type-badge{font-size:.72rem;padding:.2rem .6rem;border-radius:.4rem;font-weight:600;white-space:nowrap;flex-shrink:0}
+.badge-eletronico{background:var(--border);color:var(--moss)}
+.badge-volumoso{background:rgba(var(--rgb-lime),.28);color:var(--earth)}
+.pev-addr{font-size:.92rem;color:var(--mid);margin-top:.3rem;line-height:1.4}
+.pev-note{font-size:.88rem;color:#a14a00;margin-top:.4rem;line-height:1.45}
+.pev-items,.pp-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.pev-items{margin-top:.6rem}
+.pev-item-tag,.pp-tags span{font-family:var(--ui);font-size:.72rem;background:var(--paper);color:var(--mid);border-radius:.35rem;padding:.15rem .5rem}
+.pev-link{display:inline-block;margin-top:.6rem;font-size:.82rem;font-weight:600;color:var(--moss);text-decoration:none}
+.pev-link:hover{text-decoration:underline}
+.map-shell{position:relative;border-radius:1.5rem;overflow:hidden;background:var(--border);box-shadow:0 30px 70px -25px rgba(var(--rgb-abyss),.5);border:1px solid var(--border)}
+#main-map{height:660px;width:100%;z-index:0}
+.map-note{margin-top:1rem;font-size:.9rem;color:var(--mid);line-height:1.55}
+.map-fail{display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;padding:2rem;text-align:center;color:var(--mid);font-size:.95rem;line-height:1.6;background:var(--border)}
+.leaflet-container{font-family:var(--ui);background:var(--border)}
+.leaflet-control-layers,.leaflet-bar{border:none!important;border-radius:.7rem!important;box-shadow:0 8px 24px rgba(var(--rgb-abyss),.28)!important;overflow:hidden}
+.leaflet-control-layers{font-size:.85rem}
+.leaflet-control-layers-expanded{padding:.6rem .9rem!important}
+.leaflet-bar a{color:var(--moss)!important}
+.leaflet-popup-content-wrapper{border-radius:1rem;box-shadow:0 16px 40px rgba(var(--rgb-abyss),.35);padding:0}
+.leaflet-popup-content{margin:0;width:250px!important}
+.pp{padding:1rem 1.1rem 1.05rem;font-family:var(--ui)}
+.pp-badge{display:inline-block;font-size:.72rem;font-weight:600;background:var(--lime);color:var(--moss);border-radius:.35rem;padding:.15rem .55rem}
+.pp h4{font-size:1.05rem;color:var(--moss);margin:.55rem 0 .2rem;line-height:1.2}
+.pp p{font-size:.85rem;color:#5a4f78;margin:0 0 .5rem;line-height:1.4}
+.pp-tags{margin-bottom:.7rem}
+.pp-btn{display:inline-block;background:var(--moss);color:var(--lime)!important;text-decoration:none;border-radius:.5rem;padding:.5rem 1rem;font-size:.82rem;font-weight:600}
+.pp small{display:block;margin-top:.6rem;font-size:.72rem;color:#8f86a8;line-height:1.4}
+.pin-wrap,.num-pin{background:none;border:none}
+.pin{position:relative;width:34px;height:44px}
+.pin-body{position:absolute;left:3px;top:0;width:28px;height:28px;background:var(--moss);border:3px solid var(--lime);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 6px 14px rgba(0,0,0,.45)}
+.pin-ico{position:absolute;left:0;top:4px;width:34px;text-align:center;font-size:12px;line-height:20px;z-index:2;filter:grayscale(1) brightness(0) invert(1)}
+.pin-pulse{position:absolute;left:4px;top:30px;width:26px;height:12px;border-radius:50%;background:rgba(var(--rgb-lime),.55);animation:pinpulse 2.4s ease-out infinite}
+@keyframes pinpulse{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+.me-dot{width:18px;height:18px;border-radius:50%;background:#2b7de9;border:3px solid #fff;animation:mepulse 2s infinite}
+@keyframes mepulse{0%{box-shadow:0 0 0 0 rgba(43,125,233,.55)}100%{box-shadow:0 0 0 18px rgba(43,125,233,0)}}
+.num-pin span{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--lime);border:3px solid var(--moss);color:var(--moss);font-family:var(--ui);font-weight:700;font-size:.74rem;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.num-pin.atual span{background:#fff;font-size:.65rem}
+
+.ideal-wrap{margin-top:5rem;background:#fff;border:1px solid var(--border);border-radius:1.75rem;padding:2.8rem;box-shadow:0 30px 80px -40px rgba(var(--rgb-abyss),.4)}
+.ideal-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;margin-bottom:2rem}
+.ideal-head .section-label{font-size:.9rem}
+.ideal-title{font-size:clamp(1.8rem,3vw,2.5rem);line-height:1;color:var(--moss)}
+.ideal-sub{font-size:1.05rem;color:var(--mid);line-height:1.55;max-width:58ch;margin-top:.7rem}
+.mode-tabs{display:flex;background:var(--paper);border-radius:.8rem;padding:.3rem;gap:.15rem}
+.mode-btn{border:none;background:transparent;padding:.55rem 1.1rem;border-radius:.55rem;font-size:.88rem;font-weight:600;color:var(--mid);cursor:pointer;transition:all .2s}
+.mode-btn.active{background:var(--moss);color:var(--lime)}
+.ideal-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:2rem;align-items:start}
+.ideal-canvas{border:1px solid var(--border);border-radius:1.1rem;overflow:hidden;background:#fff;min-width:0}
+#ideal-map{height:560px;width:100%;z-index:0;background:var(--border)}
+.ideal-legend{display:flex;flex-wrap:wrap;gap:1.2rem;padding:.75rem 1rem;border-top:1px solid var(--border);font-family:var(--ui);font-size:.8rem;color:var(--mid)}
+.ideal-legend span{display:flex;align-items:center;gap:.4rem}
+.ideal-legend i{width:.65rem;height:.65rem;border-radius:50%;display:inline-block}
+.ideal-legend i.dash{border-radius:0;width:1rem;height:0;border-top:2px dashed #8a7fae}
+.ideal-panel{display:flex;flex-direction:column;gap:1.1rem}
+.im-stats{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.im-stat{background:var(--paper);border-radius:.8rem;padding:.9rem 1rem}
+.im-stat b{display:block;font-size:1.9rem;color:var(--moss);line-height:1.05}
+.im-stat span{font-family:var(--ui);font-size:.76rem;color:var(--mid);line-height:1.3;display:block;margin-top:.25rem}
+.im-bar{height:10px;background:var(--paper);border-radius:999px;overflow:hidden}
+.im-bar div{height:100%;background:var(--moss);border-radius:999px;transition:width .5s ease,background .3s}
+.im-ctrl label{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;color:var(--moss);margin-bottom:.3rem}
+.im-ctrl input[type=range]{width:100%}
+.im-checks{display:flex;flex-direction:column;gap:.4rem;font-size:.88rem}
+.im-checks label{display:flex;align-items:center;gap:.5rem;cursor:pointer}
+.im-msg{background:var(--soft);border-left:4px solid var(--lime);border-radius:.3rem .8rem .8rem .3rem;padding:.9rem 1.1rem;font-size:1rem;line-height:1.5;color:#3a2d5c}
+.im-clear{background:transparent;border:1.5px solid var(--red);color:var(--red);border-radius:.6rem;padding:.55rem 1rem;font-size:.88rem;font-weight:600;cursor:pointer}
+.ideal-note{margin-top:1.5rem;font-size:.92rem;color:var(--mid);line-height:1.55}
+.como{margin-top:1rem;border:1px solid var(--border);border-radius:.9rem;padding:.9rem 1.1rem;background:var(--soft)}
+.como summary{cursor:pointer;font-family:var(--ui);font-weight:600;color:var(--moss)}
+.como ul{margin:.7rem 0 0 1.1rem;font-size:.98rem;line-height:1.6;color:var(--ink)}
+.como li{margin-bottom:.4rem}
+
+#guia{background:var(--mist)}
+.guia-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:3.5rem}
+.guia-card{background:#fff;border-radius:1.1rem;padding:1.9rem;border:1px solid rgba(var(--rgb-moss),.1);transition:transform .2s,box-shadow .2s;cursor:pointer}
+.guia-card:hover{transform:translateY(-4px);box-shadow:0 22px 50px -20px rgba(var(--rgb-abyss),.4)}
+.guia-emoji{display:grid;place-items:center;width:3.4rem;height:3.4rem;border-radius:50%;background:var(--lime);font-size:1.5rem;margin-bottom:1.2rem;filter:grayscale(1) contrast(1.3)}
+.guia-card h3{font-size:1.3rem;color:var(--moss);margin-bottom:.5rem}
+.guia-card p{font-size:1rem;color:var(--mid);line-height:1.5}
+.guia-steps{margin-top:1.2rem;display:flex;flex-direction:column;gap:.55rem;padding-top:1.1rem;border-top:1px solid var(--border)}
+.guia-step{display:flex;align-items:flex-start;gap:.65rem;font-size:.95rem;line-height:1.4;color:var(--ink)}
+.step-dot{width:1.4rem;height:1.4rem;border-radius:50%;background:var(--moss);color:var(--lime);font-family:var(--ui);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.anat{margin-top:5rem}
+.anat-title{font-size:clamp(1.8rem,3vw,2.5rem);line-height:1;color:var(--moss)}
+.anat-sub{font-size:1.1rem;color:var(--mid);margin:.8rem 0 2rem;max-width:56ch;line-height:1.55}
+.anat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.anat-card{position:relative;overflow:hidden;min-height:260px;background:#fff;border:1px solid rgba(var(--rgb-moss),.1);border-radius:1.1rem;padding:1.7rem;cursor:pointer;transition:box-shadow .25s,transform .25s}
+.anat-card:hover,.anat-card:focus-visible{box-shadow:0 22px 50px -20px rgba(var(--rgb-abyss),.4);transform:translateY(-3px)}
+.anat-emoji{display:block;font-size:2.6rem;margin-bottom:1rem;filter:grayscale(1)}
+.anat-card h4{font-size:1.25rem;color:var(--moss);margin-bottom:.8rem}
+.anat-badge{display:inline-block;font-size:.76rem;font-weight:600;padding:.3rem .7rem;border-radius:.4rem}
+.anat-badge.ok{background:var(--border);color:var(--moss)}
+.anat-badge.mid{background:rgba(var(--rgb-lime),.28);color:var(--earth)}
+.anat-badge.low{background:#f8d0dc;color:var(--red)}
+.anat-hint{position:absolute;left:1.7rem;bottom:1.3rem;font-family:var(--ui);font-size:.8rem;color:var(--mid)}
+.anat-tip{position:absolute;inset:0;background:var(--moss);color:var(--mist);padding:1.4rem 1.5rem;transform:translateY(102%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:.55rem;overflow:auto}
+.anat-card:hover .anat-tip,.anat-card:focus-visible .anat-tip,.anat-card.on .anat-tip{transform:none}
+.anat-tip b{font-size:.82rem;font-weight:600;color:var(--lime)}
+.anat-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.anat-chips span{background:rgba(var(--rgb-lime),.14);border:1px solid rgba(var(--rgb-lime),.4);border-radius:.4rem;padding:.2rem .6rem;font-family:var(--ui);font-size:.78rem}
+.anat-tip p{font-size:.95rem;line-height:1.5;color:rgba(241,236,250,.9)}
+.anat-note{font-size:.92rem;color:var(--mid);margin-top:1.2rem}
+
+#dados{background:linear-gradient(180deg,var(--moss),var(--abyss));color:var(--mist);position:relative;overflow:hidden}
+#dados::before{content:'';position:absolute;inset:0;background:repeating-radial-gradient(circle at 8% 100%,transparent 0 62px,rgba(255,255,255,.045) 62px 63px);pointer-events:none}
+#dados>*{position:relative}
+#dados .section-label{color:var(--lilac)}
+#dados .section-title{color:var(--soft)}
+.dados-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3.5rem;align-items:start}
+.dados-form,.metric-card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);border-radius:1.4rem;backdrop-filter:blur(6px)}
+.dados-form{padding:2.2rem}
+.dados-form h3{font-size:1.5rem;color:var(--soft);margin-bottom:1.6rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+.form-group label{font-size:.88rem;color:#bfb2dd;font-weight:500}
+.form-group select,.form-group input,.form-group textarea{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:.6rem;padding:.8rem 1rem;font-size:.95rem;color:var(--soft);outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+.form-group select option{background:var(--abyss);color:var(--soft)}
+.form-group textarea{resize:vertical;min-height:90px}
+.form-group select:focus,.form-group input:focus,.form-group textarea:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(var(--rgb-lime),.2)}
+.priv{font-size:.92rem;line-height:1.5;opacity:.78;margin:.2rem 0 1.1rem}
+.btn-lime,.btn-red{width:100%;border:none;border-radius:.7rem;padding:.95rem;font-size:1rem;font-weight:700;cursor:pointer;margin-top:.5rem;transition:transform .18s,box-shadow .2s}
+.btn-lime{background:var(--lime);color:var(--moss);box-shadow:0 10px 28px rgba(var(--rgb-lime),.25)}
+.btn-lime:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(var(--rgb-lime),.38)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 10px 28px rgba(217,43,94,.28)}
+.btn-red:hover{transform:translateY(-2px)}
+.metrics-panel{display:flex;flex-direction:column;gap:1.3rem}
+.metric-card{padding:1.6rem}
+.metric-head{margin-bottom:1rem}
+.metric-title{font-family:var(--ui);font-weight:600;font-size:1.05rem;color:var(--soft)}
+.metric-bar-wrap{display:flex;flex-direction:column;gap:.65rem}
+.metric-row{display:flex;align-items:center;gap:.8rem}
+.metric-label{font-family:var(--ui);font-size:.82rem;color:var(--lilac);width:130px;flex-shrink:0}
+.metric-bar-bg{flex:1;height:8px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+.metric-bar-fill{height:100%;border-radius:999px;background:var(--lime);transition:width 1s ease}
+.metric-val{font-family:var(--ui);font-size:.82rem;font-weight:600;color:var(--lime);width:2.6rem;text-align:right}
+.metric-empty{font-size:1rem;color:var(--lilac);line-height:1.55}
+.metric-num-large{font-size:4rem;color:var(--lime);line-height:1}
+.metric-sub{font-size:.95rem;color:var(--lilac);margin-top:.4rem}
+
+#denuncia{background:var(--paper)}
+.denuncia-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;align-items:start}
+.denuncia-form{background:#fff;border:1px solid var(--border);border-radius:1.4rem;padding:2.2rem;box-shadow:0 30px 70px -40px rgba(var(--rgb-abyss),.4)}
+.denuncia-form h3{font-size:1.5rem;color:var(--moss);margin-bottom:1.6rem}
+.denuncia-form .form-group label{color:var(--mid)}
+.denuncia-form .form-group select,.denuncia-form .form-group input,.denuncia-form .form-group textarea{background:var(--soft);border-color:var(--border);color:var(--ink)}
+.denuncia-form .form-group select:focus,.denuncia-form .form-group input:focus,.denuncia-form .form-group textarea:focus{border-color:var(--moss);box-shadow:0 0 0 3px rgba(var(--rgb-moss),.12)}
+.denuncia-form .form-group select option{background:#fff;color:var(--ink)}
+.photo-drop{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:1.3rem;border:2px dashed var(--border);border-radius:.9rem;background:var(--soft);cursor:pointer;text-align:center;transition:border-color .2s,background .2s}
+.photo-drop:hover{border-color:var(--moss);background:var(--mist)}
+.photo-ico{font-size:1.8rem;filter:grayscale(1)}
+.photo-txt{font-family:var(--ui);font-size:.95rem;font-weight:600;color:var(--moss)}
+.photo-drop small{font-size:.85rem;color:var(--mid)}
+.photo-preview{position:relative;border-radius:.9rem;overflow:hidden;border:1px solid var(--border)}
+.photo-preview img{display:block;width:100%;max-height:220px;object-fit:cover}
+.photo-remove{position:absolute;top:.6rem;right:.6rem;background:rgba(var(--rgb-abyss),.8);color:#fff;border:none;border-radius:.5rem;padding:.4rem .8rem;font-size:.8rem;cursor:pointer}
+.denuncia-info{display:flex;flex-direction:column;gap:1.3rem}
+.info-card{background:#fff;border:1px solid var(--border);border-radius:1.1rem;padding:1.6rem}
+.info-card h4{font-size:1.15rem;color:var(--moss);margin-bottom:.7rem}
+.info-card p{font-size:1rem;color:var(--mid);line-height:1.55}
+.recent-list{display:flex;flex-direction:column;gap:.5rem}
+.recent-item{display:flex;align-items:flex-start;gap:.8rem;padding:.8rem;background:var(--soft);border-radius:.7rem}
+.recent-dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:.5rem}
+.recent-text{font-family:var(--ui);font-size:.9rem;font-weight:500;color:var(--ink);line-height:1.4}
+.recent-time{font-size:.85rem;color:var(--mid);margin-top:.15rem}
+.recent-thumb{width:48px;height:48px;border-radius:.5rem;object-fit:cover;cursor:pointer;flex-shrink:0}
+
+#comunidade{background:var(--soft)}
+#comunidade .com-bar{display:flex;gap:1.3rem;flex-wrap:wrap;align-items:center;margin:2rem 0 1.2rem;font-size:.95rem}
+#comunidade .com-bar label{display:flex;gap:.45rem;align-items:center;cursor:pointer;font-weight:600;color:var(--moss)}
+#comunidade .com-bar button{background:var(--moss);color:var(--lime);border:none;border-radius:.6rem;padding:.6rem 1.3rem;font-weight:600;cursor:pointer;margin-left:auto}
+#com-map{height:500px;border-radius:1.5rem;overflow:hidden;box-shadow:0 30px 70px -30px rgba(var(--rgb-abyss),.5)}
+.com-msg{font-size:.95rem;color:var(--mid);margin-top:.9rem}
+
+#assistente{background:var(--mist)}
+.ia-layout{display:grid;grid-template-columns:1fr 380px;gap:2rem;margin-top:3rem;align-items:start}
+.chat-window{background:#fff;border:1px solid rgba(var(--rgb-moss),.12);border-radius:1.5rem;overflow:hidden;box-shadow:0 30px 70px -40px rgba(var(--rgb-abyss),.4)}
+.chat-window.off{opacity:.85}
+.chat-header{background:var(--moss);padding:1.1rem 1.5rem;display:flex;align-items:center;gap:.8rem}
+.chat-avatar,.msg-avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ui);font-weight:700;flex-shrink:0}
+.chat-avatar{width:2.4rem;height:2.4rem;background:var(--lime);color:var(--moss)}
+.chat-header-name{font-family:var(--ui);font-weight:600;color:#fff;font-size:1rem}
+.chat-header-status{font-family:var(--ui);font-size:.8rem;color:var(--lilac)}
+.chat-messages{height:340px;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
+.msg{display:flex;gap:.8rem;align-items:flex-end}
+.msg.user{flex-direction:row-reverse}
+.msg-bubble{max-width:78%;padding:.8rem 1rem;border-radius:1rem;font-size:1rem;line-height:1.5}
+.msg.bot .msg-bubble{background:var(--mist);color:var(--ink);border-bottom-left-radius:.25rem}
+.msg.user .msg-bubble{background:var(--moss);color:var(--mist);border-bottom-right-radius:.25rem}
+.msg-avatar{width:2rem;height:2rem;font-size:.8rem}
+.msg.bot .msg-avatar{background:var(--lime);color:var(--moss)}
+.msg.user .msg-avatar{background:var(--moss);color:var(--lime)}
+.chat-input-area{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.7rem}
+.chat-input{flex:1;padding:.8rem 1rem;border-radius:.7rem;border:1px solid var(--border);font-size:.95rem;outline:none;background:var(--soft)}
+.chat-send{width:2.9rem;height:2.9rem;border-radius:.7rem;background:var(--moss);color:var(--lime);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.chat-send:disabled,.chat-input:disabled{cursor:not-allowed}
+.quick-chips{display:flex;flex-wrap:wrap;gap:.5rem;padding:0 1.5rem 1rem}
+.chip{font-size:.82rem;padding:.4rem .85rem;border-radius:.5rem;background:var(--mist);color:var(--moss);border:none}
+.ia-info{display:flex;flex-direction:column;gap:1.2rem}
+.ia-tip{background:#fff;border:1px solid rgba(var(--rgb-moss),.12);border-radius:1.1rem;padding:1.5rem}
+.ia-tip h4{font-size:1.1rem;color:var(--moss);margin-bottom:.5rem}
+.ia-tip p{font-size:1rem;color:var(--mid);line-height:1.55}
+
+footer{background:var(--abyss);color:var(--lilac);padding:5rem var(--pad) 3rem;text-align:left}
+footer .footer-logo{font-size:clamp(3rem,9vw,7rem);line-height:.9;letter-spacing:-.055em;color:var(--soft);margin-bottom:1.5rem}
+footer .footer-logo span{color:var(--lime)}
+footer p{font-size:1.05rem;margin-bottom:.2rem}
+.footer-links{display:flex;flex-wrap:wrap;gap:1.6rem;margin:2.4rem 0 0;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.12)}
+.footer-links a{color:var(--border);font-family:var(--ui);font-size:.9rem;font-weight:500;text-decoration:none}
+.footer-links a:hover{color:var(--lime)}
+footer .footer-credits{font-size:.92rem;margin-top:2rem;opacity:.65;line-height:1.6}
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:9000;background:var(--moss);color:#fff;border-left:5px solid var(--lime);border-radius:.8rem;padding:1rem 1.4rem;font-family:var(--ui);font-size:.95rem;font-weight:500;box-shadow:0 16px 40px rgba(0,0,0,.3);transform:translateY(120%);opacity:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s;max-width:340px}
+.toast.show{transform:none;opacity:1}
+.modal-overlay{position:fixed;inset:0;z-index:5000;background:rgba(var(--rgb-abyss),.65);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:1.5rem;padding:2.5rem;max-width:540px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 40px 90px rgba(0,0,0,.35)}
+.modal h2{font-size:1.7rem;color:var(--moss);margin-bottom:.5rem}
+.modal .close-btn{float:right;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mid)}
+.link-box{width:100%;margin-top:.8rem;padding:.7rem 1rem;border:1px solid var(--border);border-radius:.6rem;font-size:.85rem;background:var(--soft)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){.fade-up{animation:fadeUp .8s cubic-bezier(.2,.8,.2,1) both}.fade-up-1{animation-delay:.12s}.fade-up-2{animation-delay:.24s}.fade-up-3{animation-delay:.36s}.fade-up-4{animation-delay:.5s}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}
+
+@media (max-width:1000px){
+  #hero{grid-template-columns:1fr;gap:3.5rem;padding:7rem 1.5rem 4.5rem}
+  .map-preview{height:440px;border-radius:10rem 10rem 1.25rem 1.25rem;box-shadow:12px 12px 0 var(--lime),0 30px 60px rgba(0,0,0,.35);margin-right:12px}
+  .problema-grid,.mapa-layout,.guia-grid,.anat-grid,.dados-layout,.denuncia-layout,.ia-layout,.ideal-grid{grid-template-columns:1fr}
+  .problema-grid{gap:2.5rem}
+  nav{padding:.9rem 1.5rem}
+  .nav-toggle{display:block}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:rgba(var(--rgb-abyss),.98);padding:.4rem 1.5rem 1rem}
+  .nav-links.open{display:flex}
+  .nav-links a{display:block;padding:.9rem 0;font-size:1rem}
+  select,input:not([type=checkbox]):not([type=radio]),textarea,.btn-lime,.btn-red,.mode-btn{min-height:44px}
+  section{padding:4.5rem 1.5rem}
+  #main-map{height:480px}
+  #ideal-map{height:440px}
+  .ideal-wrap{padding:1.4rem}
+  .stat-item{padding-right:1.2rem}.stat-item+.stat-item{padding-left:1.2rem}
+  .stat-num{font-size:2.2rem}
+}
+/* ═══ CAMADA NEUROARQUITETURA ═══
+Luz do amanhecer · formas curvas · escala áurea · baixa carga cognitiva · ritmo circadiano */
+:root{--ink:#2a2140;--moss:#3b2a6b;--abyss:#241a45;--lime:#f4964a;--paper:#f4f0f9;--soft:#faf7fc;--mist:#e9e1f5;--border:#ddd4ec;--mid:#74688f;--red:#d4476f;
+--ui:'Figtree',system-ui,sans-serif;--txt:'Figtree',system-ui,sans-serif;--phi:1.618rem;--curve:3rem;--sombra:0 30px 80px -34px rgba(59,42,107,.32);--warm:0}
+html[data-tempo=manha]{--warm:0}
+html[data-tempo=entardecer]{--warm:.035;--paper:#f6eff6}
+html[data-tempo=noite]{--warm:.07;--paper:#efe8f1;--soft:#f6f0f5}
+body{font-size:1.0625rem;line-height:1.75;color:var(--ink)}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;background:rgba(var(--rgb-lime),var(--warm));mix-blend-mode:multiply;transition:background 2s}
+h1,h2,h3,h4,.section-title,.stat-num,.prob-num,.metric-num-large,.im-stat b,.nav-logo,.footer-logo{font-family:'Fraunces',Georgia,serif;font-weight:540;letter-spacing:-.02em;font-variation-settings:'SOFT' 100,'WONK' 0}
+#prog{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--lilac),var(--lime));z-index:1100;border-radius:0 3px 3px 0}
+nav{background:rgba(250,247,252,.74);border-bottom:1px solid rgba(var(--rgb-moss),.1)}
+.nav-logo{color:var(--moss)}
+.nav-links a{color:var(--mid)}
+.nav-links a:hover,.nav-links a.active{color:var(--moss)}
+.nav-toggle{border-color:rgba(var(--rgb-moss),.3);color:var(--moss)}
+nav :focus-visible,#hero :focus-visible{outline-color:var(--moss)}
+
+#hero{grid-template-columns:1fr 1.618fr;gap:4.236rem;padding:8rem calc(var(--pad) + 1rem) 9rem var(--pad);background:linear-gradient(180deg,#e4dbf3 0%,#f0e4f2 52%,#fbe8d8 100%);color:var(--ink)}
+.hero-bg{background:radial-gradient(55% 50% at 82% 28%,rgba(var(--rgb-lime),.3),transparent 70%),radial-gradient(50% 45% at 12% 85%,rgba(130,100,210,.2),transparent 70%)}
+#hero::after{content:'';position:absolute;inset:0;z-index:0;opacity:.09;mix-blend-mode:multiply;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#hero h1{color:#33265c;font-size:clamp(2.8rem,5.2vw,4.7rem);line-height:1.04}
+.hero-tag{background:rgba(255,255,255,.65);border-color:var(--border);color:var(--mid)}
+.hero-tag::before{background:var(--lime);box-shadow:0 0 0 4px rgba(var(--rgb-lime),.25)}
+.hero-sub{color:var(--mid);font-size:1.25rem;line-height:1.7;max-width:34ch}
+.btn-primary,.btn-outline,.btn-lime,.btn-red,.locate-btn,.im-clear,.mode-btn,.pp-btn,.filter-btn,.chip,#comunidade .com-bar button{border-radius:999px}
+.btn-primary{background:var(--lime);color:var(--moss);box-shadow:0 12px 32px -8px rgba(var(--rgb-lime),.55)}
+.btn-outline{color:var(--moss);border-color:rgba(var(--rgb-moss),.35)}
+.btn-outline:hover{background:var(--moss);color:#fff}
+.hero-stats{border-top-color:rgba(var(--rgb-moss),.16)}
+.stat-item+.stat-item{border-left-color:rgba(var(--rgb-moss),.16)}
+.stat-num{color:var(--moss)}
+.stat-label{color:var(--mid)}
+.hero-visual::before{content:'';position:absolute;inset:8% -5% -7% 7%;z-index:-1;border-radius:46% 54% 50% 50%/55% 45% 55% 45%;background:rgba(var(--rgb-lime),.42);filter:blur(46px)}
+.map-preview{height:620px;border-radius:58% 42% 46% 54%/52% 48% 52% 48%;box-shadow:0 50px 100px -30px rgba(var(--rgb-moss),.45)}
+.hero-chip{left:50%!important;transform:translateX(-50%);bottom:auto;border-radius:999px;padding:.55rem 1.1rem;white-space:nowrap;background:rgba(255,255,255,.92)}
+.hero-chip.c1{top:auto;bottom:4.4rem}
+.hero-chip.c2{bottom:1.6rem}
+@keyframes respirar{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.7);opacity:1}}
+@media (prefers-reduced-motion:no-preference){.hero-tag::before{animation:respirar 8s ease-in-out infinite}.fade-up{animation-duration:1.2s!important}}
+
+section:not(#hero),footer{position:relative;z-index:1;margin-top:calc(var(--curve) * -1);border-radius:var(--curve) var(--curve) 0 0}
+section:not(#hero){padding-top:calc(7rem + var(--curve))}
+.section-label{color:var(--mid)}
+.section-label::before{width:.8rem;height:.8rem;border-radius:75% 25% 75% 25%;background:var(--lime);transform:rotate(-12deg)}
+.section-title{font-size:clamp(2.2rem,4.2vw,3.6rem);line-height:1.1;max-width:22ch}
+.section-body{line-height:1.75;max-width:58ch;color:var(--mid)}
+#problema{background:var(--soft)}
+.prob-card{border:none;background:#fff;border-radius:2rem;padding:2rem 2.2rem;box-shadow:var(--sombra)}
+.prob-num{font-size:clamp(3.2rem,5.5vw,4.6rem);line-height:1}
+.prob-card:last-child{background:linear-gradient(145deg,#fbd9bd,#f4b98c);border-radius:2rem 2rem 2rem 4rem}
+.problema-grid{gap:2rem}
+.search-box input,.form-group select,.form-group input,.form-group textarea,.chat-input,.link-box{border-radius:1rem}
+.search-box input{border-radius:999px}
+.pev-card,.near-card,.como,.recent-item,.im-stat,.im-msg{border-radius:1.25rem}
+.pev-type-badge,.anat-badge,.pp-badge,.pev-item-tag,.pp-tags span,.anat-chips span{border-radius:999px}
+.map-shell,#com-map{border-radius:2rem;box-shadow:var(--sombra)}
+.leaflet-control-layers,.leaflet-bar{border-radius:1rem!important}
+.leaflet-popup-content-wrapper{border-radius:1.4rem}
+.ideal-wrap{border-radius:2.5rem;padding:3rem;box-shadow:var(--sombra)}
+.ideal-canvas{border-radius:1.6rem}
+.mode-tabs{border-radius:999px}
+.guia-card,.anat-card,.info-card,.ia-tip{border-radius:1.75rem}
+.guia-emoji{background:rgba(var(--rgb-lime),.22);filter:none}
+.dados-form,.metric-card{border-radius:2rem}
+.denuncia-form{border-radius:2rem;box-shadow:var(--sombra)}
+.photo-drop,.photo-preview{border-radius:1.4rem}
+.chat-window{border-radius:2rem;box-shadow:var(--sombra)}
+.msg-bubble{border-radius:1.4rem}
+.modal{border-radius:2rem}.toast{border-radius:1.2rem}
+#dados{background:linear-gradient(180deg,var(--moss),var(--abyss))}
+#dados::before{background:radial-gradient(40% 45% at 10% 95%,rgba(var(--rgb-lime),.16),transparent 70%),radial-gradient(40% 40% at 95% 5%,rgba(150,120,230,.22),transparent 70%)}
+#dados .section-body{color:#cfc3ea}
+footer{padding-top:calc(5rem + var(--curve))}
+footer .footer-logo{font-weight:480}
+@media (max-width:1000px){
+  #hero{grid-template-columns:1fr;padding:7rem 1.5rem 7rem}
+  .map-preview{height:460px;margin-right:0;border-radius:58% 42% 46% 54%/52% 48% 52% 48%;box-shadow:0 36px 70px -30px rgba(var(--rgb-moss),.45)}
+  .nav-links{background:rgba(250,247,252,.98)}
+  .nav-links a{color:var(--moss)}
+  section:not(#hero){padding-top:calc(4.5rem + var(--curve))}
+  .ideal-wrap{padding:1.5rem;border-radius:2rem}
+}
+/* ═══ POLIMENTO FINAL ═══ */
+/* seletor de camadas do mapa: pílula compacta */
+.leaflet-control-layers{width:auto!important;height:auto!important;min-width:0;max-width:10.5rem;padding:0!important;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.7)!important;border-radius:1.2rem!important;box-shadow:0 10px 30px -10px rgba(var(--rgb-abyss),.45)!important}
+.leaflet-control-layers-expanded{padding:.3rem!important}
+.leaflet-control-layers-list{margin:0}
+.leaflet-control-layers-base{display:flex;flex-direction:column;gap:.1rem}
+.leaflet-control-layers-base label{display:block;margin:0}
+.leaflet-control-layers-base label>span{display:flex;align-items:center;gap:.4rem;padding:.38rem .8rem;border-radius:999px;font:600 .78rem/1.2 var(--ui);color:var(--mid);white-space:nowrap;cursor:pointer;transition:background .25s,color .25s}
+.leaflet-control-layers-base input{position:absolute;opacity:0;pointer-events:none}
+.leaflet-control-layers-base label:has(input:checked)>span{background:var(--moss);color:#fff}
+.leaflet-control-layers-base label:has(input:focus-visible)>span{outline:2px solid var(--lime);outline-offset:1px}
+.leaflet-control-layers-separator{display:none}
+.leaflet-top.leaflet-right{max-width:50%}
+/* navegação flutuante */
+nav{top:.8rem;left:max(.75rem,calc(var(--pad) - 1rem));right:max(.75rem,calc(var(--pad) - 1rem));padding:.5rem .6rem .5rem 1.5rem;border-radius:999px;border:1px solid rgba(255,255,255,.75);background:rgba(250,247,252,.68);backdrop-filter:blur(18px) saturate(1.5);box-shadow:0 14px 40px -18px rgba(var(--rgb-moss),.45)}
+.nav-links{gap:.2rem}
+.nav-links a{padding:.5rem 1rem;border:none;border-radius:999px}
+.nav-links a:hover,.nav-links a.active{background:rgba(var(--rgb-moss),.09);color:var(--moss)}
+section,.ideal-wrap{scroll-margin-top:96px}
+/* numeração editorial das seções */
+body{counter-reset:sec}
+.section-label{counter-increment:sec}
+.section-label::after{content:'— ' counter(sec,decimal-leading-zero);font:400 .9rem 'Fraunces',serif;opacity:.55}
+/* moldura do mapa e atmosfera */
+.map-shell{padding:.55rem;background:linear-gradient(140deg,#fff,var(--mist) 70%,#fbe3d0)}
+#main-map,#com-map{border-radius:1.5rem;overflow:hidden}
+.leaflet-tile-pane{filter:saturate(.86) contrast(.98)}
+.ideal-canvas{box-shadow:inset 0 0 0 .4rem #fff}
+/* cartões com luz e vida */
+.pev-card,.prob-card,.guia-card,.anat-card,.info-card,.ia-tip,.denuncia-form{box-shadow:var(--sombra),inset 0 1px 0 rgba(255,255,255,.9);transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s,border-color .3s}
+.pev-card:hover,.prob-card:hover{transform:translateY(-3px)}
+.guia-card{position:relative;overflow:hidden}
+.guia-card::before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--lilac),var(--lime));transform:scaleX(0);transform-origin:left;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.guia-card:hover::before{transform:none}
+.anat-card{background:linear-gradient(160deg,#fff,#f6f1fb)}
+.btn-primary,.btn-lime{background-image:linear-gradient(120deg,var(--lime),#f7ac6b);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.btn-primary:hover,.btn-lime:hover{transform:translateY(-3px) scale(1.015)}
+.locate-btn{background:linear-gradient(135deg,var(--moss),#523a94);box-shadow:0 12px 28px -12px rgba(var(--rgb-moss),.7)}
+/* rodapé com brilho de entardecer */
+footer{background:linear-gradient(180deg,#2a1d52,#1a1238);overflow:hidden}
+footer::before{content:'';position:absolute;inset:auto -10% -45% -10%;height:75%;background:radial-gradient(50% 60% at 50% 100%,rgba(var(--rgb-lime),.3),transparent 70%);pointer-events:none}
+footer>*{position:relative}
+footer .footer-logo{background:linear-gradient(180deg,#fff 30%,#c9b8f2);-webkit-background-clip:text;background-clip:text;color:transparent}
+footer .footer-logo span{-webkit-text-fill-color:var(--lime)}
+@media (prefers-reduced-motion:no-preference){
+  @keyframes flutuar{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-6px)}}
+  .hero-chip.c1{animation:flutuar 7s ease-in-out infinite}
+  .hero-chip.c2{animation:flutuar 9s ease-in-out -3s infinite}
+  @keyframes revelar{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+  @supports (animation-timeline:view()){
+    .prob-card,.guia-card,.anat-card,.info-card,.ia-tip,.dados-form,.metric-card,.denuncia-form,.chat-window,.ideal-wrap{animation:revelar linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+  }
+}
+@media (max-width:1000px){
+  nav{left:.6rem;right:.6rem;padding:.4rem .5rem .4rem 1.2rem}
+  .nav-links{top:calc(100% + .5rem);border-radius:1.6rem;padding:.6rem;box-shadow:0 20px 50px -20px rgba(var(--rgb-moss),.5);border:1px solid #fff}
+  .nav-links a{padding:.85rem 1rem}
+  .leaflet-top.leaflet-right{max-width:70%}
+}
+/* ═══ MAPA VIVO ═══ */
+.onda{pointer-events:none}
+.onda i{position:absolute;left:-70px;top:-70px;width:140px;height:140px;border-radius:50%;border:2.5px solid var(--lime);background:radial-gradient(circle,rgba(var(--rgb-lime),.22),transparent 70%);opacity:0;animation:onda 3s ease-out infinite}
+.onda i:nth-child(2){animation-delay:.9s}.onda i:nth-child(3){animation-delay:1.8s}
+@keyframes onda{from{transform:scale(.08,.045);opacity:.95}to{transform:scale(1,.56);opacity:0}}
+.pin{transform-origin:50% 100%}
+.pin.cai{animation:cai .9s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes cai{0%{transform:translateY(-190px) scale(.5);opacity:0}45%{opacity:1}65%{transform:translateY(3px) scale(1.06,.92)}82%{transform:translateY(-9px)}100%{transform:none}}
+.pin.quente{animation:salto .55s cubic-bezier(.3,1.5,.5,1) both;filter:drop-shadow(0 8px 14px rgba(var(--rgb-lime),.7))}
+@keyframes salto{to{transform:translateY(-9px) scale(1.18)}}
+.fio{stroke-dasharray:1 10;animation:fluxo 1s linear infinite}
+@keyframes fluxo{to{stroke-dashoffset:-11}}
+.fio-brilho{filter:blur(3px)}
+.mapa-luz{position:absolute;inset:0;z-index:500;pointer-events:none;opacity:0;transition:opacity .7s;background:radial-gradient(circle at var(--fx,50%) var(--fy,50%),transparent 70px,rgba(var(--rgb-abyss),.16) 230px,rgba(var(--rgb-abyss),.5) 560px)}
+.mapa-luz.on{opacity:1}
+.mapa-hud{position:absolute;top:.9rem;left:.9rem;z-index:700;display:flex;align-items:center;gap:.8rem;max-width:56%;padding:.65rem 1.1rem .65rem .9rem;border-radius:1.3rem;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.8);box-shadow:0 14px 34px -14px rgba(var(--rgb-abyss),.5);pointer-events:none;font:600 .85rem/1.2 var(--ui);color:var(--moss)}
+.mapa-hud b{font:540 1.9rem/1 'Fraunces',serif;font-variation-settings:'SOFT' 100;color:var(--moss)}
+.mapa-hud small{display:block;margin-top:.2rem;font-weight:500;font-size:.72rem;color:var(--mid)}
+.hud-dot{width:.7rem;height:.7rem;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(var(--rgb-lime),.6);animation:batida 2.2s ease-out infinite;flex-shrink:0}
+@keyframes batida{to{box-shadow:0 0 0 14px rgba(var(--rgb-lime),0)}}
+.pev-card.hot{border-color:var(--moss);box-shadow:inset 4px 0 0 var(--lime),0 18px 40px -18px rgba(var(--rgb-lime),.75)}
+@media (max-width:1000px){.mapa-hud small{display:none}.mapa-hud{max-width:60%}}
+@media (prefers-reduced-motion:reduce){.onda i,.fio,.hud-dot{animation:none}}
+
+/* ===== TEMAS: três paletas, uma só estrutura ===== */
+:root{--ink:#2a1822;--paper:#f5efe6;--soft:#faf6ef;--mist:#ece3d6;--border:#ded3c4;--mid:#7a6a62;--lilac:#c9b8b0;
+--moss:#3d2236;--abyss:#2a1424;--lime:#b6e24b;--earth:#8a5a2b;--red:#d8503f;--folha-ink:#5d8a12;
+--rgb-moss:61,34,54;--rgb-abyss:42,20,36;--rgb-lime:182,226,75;--sombra:0 30px 80px -34px rgba(61,34,54,.34)}
+html[data-tema=floresta]{--ink:#13190f;--paper:#f5f0e8;--soft:#fffdf8;--mist:#e8f4d4;--border:#d4cfc4;--mid:#6b7c52;--lilac:#b9c7a4;
+--moss:#234b1b;--abyss:#142a0e;--lime:#a8e63d;--earth:#c4874a;--red:#d94f3d;--folha-ink:#3f7d1f;
+--rgb-moss:35,75,27;--rgb-abyss:20,42,14;--rgb-lime:168,230,61;--sombra:0 30px 80px -34px rgba(35,75,27,.34)}
+html[data-tema=violeta]{--ink:#2a2140;--paper:#f4f0f9;--soft:#faf7fc;--mist:#e9e1f5;--border:#ddd4ec;--mid:#74688f;--lilac:#b7a9d9;
+--moss:#3b2a6b;--abyss:#241a45;--lime:#f4964a;--earth:#c2570a;--red:#d4476f;--folha-ink:#c2570a;
+--rgb-moss:59,42,107;--rgb-abyss:36,26,69;--rgb-lime:244,150,74;--sombra:0 30px 80px -34px rgba(59,42,107,.32)}
+h1 .accent,.section-title .accent{color:var(--folha-ink)}
+#problema .accent,#dados .accent,#hero .hero-visual .accent{color:var(--lime)}
+.paleta{display:flex;gap:.7rem;justify-content:center;align-items:center;margin-top:1.4rem;font-size:.8rem}
+.paleta button{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.7);padding:0;cursor:pointer;transition:transform .2s}
+.paleta button:hover{transform:scale(1.12)}
+.paleta button[aria-pressed=true]{outline:2px solid var(--lime);outline-offset:3px}
+
+/* ===== MOVIMENTO: um gesto por módulo ===== */
+@media (prefers-reduced-motion:no-preference){
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.2,1) calc(var(--i,0)*80ms),transform .8s cubic-bezier(.2,.7,.2,1) calc(var(--i,0)*80ms)}
+.rv.in{opacity:1;transform:none}
+@keyframes abrir{from{clip-path:inset(10% 6% 10% 6% round var(--curve,3rem));opacity:0}to{clip-path:inset(0% round var(--curve,3rem));opacity:1}}
+@keyframes lamina{from{transform:translate(-2rem,2rem);opacity:0}}
+@keyframes entra{from{opacity:0;transform:translateX(-14px)}}
+@keyframes cresce{from{transform:scaleX(0)}}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.map-preview{animation:abrir 1.1s cubic-bezier(.2,.7,.2,1) .2s backwards}
+.hero-visual::before{animation:lamina 1.2s cubic-bezier(.2,.7,.2,1) .45s backwards}
+.pev-list .pev-card{animation:entra .5s cubic-bezier(.2,.7,.2,1) backwards}
+.pev-list .pev-card:nth-child(2){animation-delay:.05s}.pev-list .pev-card:nth-child(3){animation-delay:.1s}.pev-list .pev-card:nth-child(4){animation-delay:.15s}.pev-list .pev-card:nth-child(5){animation-delay:.2s}.pev-list .pev-card:nth-child(n+6){animation-delay:.25s}
+.metric-bar-fill{transform-origin:left;animation:cresce 1.1s cubic-bezier(.2,.7,.2,1) backwards}
+.photo-preview img{animation:pop .5s cubic-bezier(.3,1.4,.5,1) backwards}
+}
+
+/* seletor de tipo de mapa (Mapa, Satélite, Escuro) */
+.base-switch{display:flex;flex-wrap:wrap;gap:.2rem;padding:.3rem;background:rgba(255,255,255,.94);border-radius:999px;box-shadow:0 10px 30px -10px rgba(var(--rgb-abyss),.45)}
+.base-switch button{border:none;background:transparent;font:600 .8rem/1.2 var(--ui);color:var(--mid);padding:.5rem .95rem;border-radius:999px;cursor:pointer;transition:background .25s,color .25s}
+.base-switch button:hover{color:var(--moss)}
+.base-switch button[aria-pressed=true]{background:var(--moss);color:#fff}
+.base-switch button:focus-visible{outline:2px solid var(--lime);outline-offset:1px}
+</style>
+<script>try{var q=new URLSearchParams(location.search).get("tema"),t=q||localStorage.getItem("tema");if(q)localStorage.setItem("tema",q);if(t)document.documentElement.setAttribute("data-tema",t);}catch(e){}</script>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#hero">Re<span>.</span>Ciclo</a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-links">☰</button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#mapa">Mapa</a></li>
+    <li><a href="#modelo-ideal">Modelo ideal</a></li>
+    <li><a href="#guia">Guia</a></li>
+    <li><a href="#dados">Dados</a></li>
+    <li><a href="#denuncia">Denunciar</a></li>
+    <li><a href="#comunidade">Comunidade</a></li>
+    <li><a href="#assistente">Assistente IA</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag fade-up">Plataforma cidadã de Maringá</div>
+    <h1 class="fade-up fade-up-1">Descarte<br><em>certo,</em><br>cidade <span class="accent">limpa.</span></h1>
+    <p class="hero-sub fade-up fade-up-2">Plataforma de georreferenciamento para resíduos inservíveis em Maringá. Encontre pontos de entrega, aprenda a reutilizar e ajude a mapear o problema.</p>
+    <div class="hero-ctas fade-up fade-up-3">
+      <button class="btn-primary" type="button" onclick="goTo('#mapa')">Ver mapa de PEVs</button>
+      <button class="btn-outline" type="button" onclick="goTo('#dados')">Registrar demanda</button>
+    </div>
+    <div class="hero-stats fade-up fade-up-4">
+      <div class="stat-item"><span class="stat-num" id="stat-pevs">0</span><span class="stat-label">Pontos mapeados</span></div>
+      <div class="stat-item"><span class="stat-num" id="stat-demandas">0</span><span class="stat-label">Demandas registradas</span></div>
+      <div class="stat-item"><span class="stat-num" id="stat-denuncias">0</span><span class="stat-label">Denúncias enviadas</span></div>
+    </div>
+  </div>
+  <div class="hero-visual fade-up fade-up-2">
+    <div class="map-preview">
+      <div class="hero-chip c1"><i></i><span id="chip-pevs">Pontos de sucata eletrônica</span></div>
+      <div class="hero-chip c2"><i></i>Poucos pontos fixos p/ volumosos</div>
+      <div id="hero-map"><div class="map-fail">Carregando mapa…</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMA -->
+<section id="problema">
+  <div class="section-label">Por que isso importa</div>
+  <div class="section-title">Maringá tem pontos de descarte.<br>Para móveis, são poucos.</div>
+  <p class="section-body">A rede de pontos fixos da cidade é voltada sobretudo a sucata eletrônica, vidro, óleo e pilhas. Para volumosos, como móveis e colchões, o morador depende de poucas opções — e o descarte irregular cresce.</p>
+  <div class="problema-grid">
+    <div class="prob-card">
+      <span class="prob-icon">🛋️</span>
+      <div class="prob-num">Poucos</div>
+      <h3>Pontos fixos para móveis e colchões</h3>
+      <p>As opções divulgadas para volumosos são a Pedreira Municipal e a coleta solicitada pelo 156. Vale confrontar esses dados com o mapa oficial da Prefeitura e registrar a demanda que fica sem resposta.</p>
+    </div>
+    <div class="prob-card">
+      <span class="prob-icon">♻️</span>
+      <div class="prob-num">4%</div>
+      <h3>Taxa de reciclagem local</h3>
+      <p>Maringá gera em média 2.853 toneladas de resíduos por dia, mas apenas 4% têm destinação adequada via reciclagem (PMGIRSU, 2017).</p>
+    </div>
+    <div class="prob-card">
+      <span class="prob-icon">🚯</span>
+      <div class="prob-num">41,5%</div>
+      <h3>Resíduos com destino inadequado</h3>
+      <p>No Brasil, 41,5% de todo o lixo urbano teve destinação inadequada em 2023, reflexo da falta de infraestrutura e informação (ABREMA, 2024).</p>
+    </div>
+    <div class="prob-card">
+      <span class="prob-icon">📍</span>
+      <div class="prob-num">Re.Ciclo</div>
+      <h3>A solução proposta</h3>
+      <p>Mapear, educar e coletar dados sobre a demanda reprimida para subsidiar políticas públicas e pressionar pela criação de PEVs para inservíveis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MAPA -->
+<section id="mapa">
+  <div class="section-label">Georreferenciamento</div>
+  <div class="section-title">Pontos de entrega em Maringá</div>
+  <p class="section-body">Explore o mapa, troque para a visão de satélite, veja quais pontos ficam perto de você e trace a rota até eles.</p>
+
+  <div class="mapa-layout">
+    <div class="mapa-sidebar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Buscar bairro, local ou material...">
+      </div>
+      <button class="locate-btn" type="button" onclick="locateMe()">Mostrar o ponto mais próximo de mim</button>
+      <div class="near-card" id="near-card" style="display:none"></div>
+
+      <div class="filter-label">Filtrar por tipo</div>
+      <div class="filters">
+        <button class="filter-btn active" type="button" onclick="setFilter('todos',this)">Todos</button>
+        <button class="filter-btn" type="button" onclick="setFilter('eletronico',this)">Sucata eletrônica</button>
+        <button class="filter-btn" type="button" onclick="setFilter('volumoso',this)">Móveis e volumosos</button>
+      </div>
+      <label class="cov-toggle"><input type="checkbox" id="toggle-cov"> Mostrar raio de 1 km ao redor dos pontos</label>
+
+      <div class="pev-list" id="pev-list"></div>
+    </div>
+
+    <div>
+      <div class="map-shell"><div id="main-map"><div class="map-fail">Carregando mapa…</div></div></div>
+      <p class="map-note">
+        Endereços reunidos de notícias e listas da Prefeitura, do Sescap-PR e da Funverde (algumas antigas) — confirme antes de ir.
+        As posições dos pinos são aproximadas e se ajustam ao endereço quando possível; o botão "Como chegar" usa o endereço exato.
+        A Prefeitura mantém um mapa oficial com mais pontos (incluindo pilhas, vidro e óleo).
+      </p>
+    </div>
+  </div>
+
+  <!-- MODELO IDEAL -->
+  <div class="ideal-wrap" id="modelo-ideal">
+    <div class="ideal-head">
+      <div>
+        <div class="section-label" style="margin-bottom:.5rem">Modelo ilustrativo e interativo</div>
+        <h3 class="ideal-title">E se Maringá tivesse PEVs suficientes?</h3>
+        <p class="ideal-sub">Sobre o mapa real da cidade, compare a rede atual com um cenário ideal. Ajuste o raio de atendimento e a proporção de habitantes por ponto, ou monte sua própria rede clicando no mapa (e arraste os pontos para reposicioná-los).</p>
+      </div>
+      <div class="mode-tabs">
+        <button class="mode-btn active" type="button" data-mode="atual">Hoje</button>
+        <button class="mode-btn" type="button" data-mode="ideal">Modelo ideal</button>
+        <button class="mode-btn" type="button" data-mode="custom">Monte o seu</button>
+      </div>
+    </div>
+
+    <div class="ideal-grid">
+      <div class="ideal-canvas">
+        <div id="ideal-map"><div class="map-fail">Carregando mapa…</div></div>
+        <div class="ideal-legend">
+          <span><i style="background:#2f8f2f"></i>Morador atendido</span>
+          <span><i style="background:#e0664f"></i>Sem PEV por perto</span>
+          <span><i class="dash"></i>Área de simulação</span>
+        </div>
+      </div>
+
+      <div class="ideal-panel">
+        <div class="im-stats">
+          <div class="im-stat"><b id="im-pevs">0</b><span id="im-l1">PEVs p/ inservíveis</span></div>
+          <div class="im-stat"><b id="im-cov">0%</b><span id="im-l2">População atendida</span></div>
+          <div class="im-stat"><b id="im-dist">—</b><span>Dist. média ao PEV mais próximo</span></div>
+          <div class="im-stat"><b id="im-hab">—</b><span>Habitantes por PEV</span></div>
+        </div>
+        <div class="im-bar"><div id="im-bar-fill" style="width:0%"></div></div>
+
+        <div class="im-ctrl">
+          <label>Raio de atendimento <span id="im-radius-val">1.500 m</span></label>
+          <input type="range" id="im-radius" min="500" max="3000" step="100" value="1500">
+        </div>
+        <div class="im-ctrl" id="im-hab-ctrl" style="display:none">
+          <label>Habitantes por PEV <span id="im-habrange-val">25.000</span></label>
+          <input type="range" id="im-habrange" min="10000" max="60000" step="5000" value="25000">
+        </div>
+
+        <div class="im-checks">
+          <label><input type="checkbox" id="im-showcov" checked> Mostrar área de cobertura</label>
+          <label><input type="checkbox" id="im-showdots" checked> Mostrar população simulada</label>
+        </div>
+
+        <div class="im-msg" id="im-msg">Carregando simulação…</div>
+        <button class="im-clear" id="im-clear" type="button" style="display:none">Limpar pontos</button>
+      </div>
+    </div>
+
+    <p class="ideal-note">
+      Simulação ilustrativa: a população (~410 mil habitantes, Censo 2022) é distribuída de forma sintética, mais densa no centro, dentro de uma área aproximada da zona urbana — não são dados de setores censitários.
+      A proporção "habitantes por PEV" é um parâmetro ajustável, não uma norma oficial. O cenário "Hoje" usa os pontos de sucata eletrônica do mapa acima.
+    </p>
+    <details class="como">
+      <summary>Como calculamos? Hipóteses e limitações</summary>
+      <ul>
+        <li><b>Os 700 pontos são sintéticos.</b> Foram sorteados por computador: cerca de 65% concentrados perto do centro e o restante espalhado pela área. Não são endereços reais nem a distribuição real da população.</li>
+        <li><b>A área é uma elipse aproximada</b> (cerca de 13 km × 11,6 km) em torno da Catedral. Ela não representa o limite oficial do perímetro urbano.</li>
+        <li><b>População:</b> 409.657 habitantes (Censo 2022, IBGE). Serve apenas para calcular quantos PEVs seriam necessários na proporção de habitantes por ponto escolhida.</li>
+        <li><b>Cobertura:</b> percentual dos pontos simulados que está dentro do raio escolhido de algum PEV, medido em <b>linha reta</b>. Não considera ruas, barreiras, declives nem transporte, então a acessibilidade real tende a ser menor.</li>
+        <li><b>Cenário "Hoje":</b> usa os PEVs cadastrados neste site. <b>Cenário ideal:</b> posições calculadas por agrupamento (k-means) sobre os pontos simulados.</li>
+        <li><b>Uso:</b> o modelo é ilustrativo. Não deve ser tomado como retrato exato da cidade nem como base de decisão sem dados reais de população e de vias.</li>
+      </ul>
+    </details>
+
+  </div>
+</section>
+
+<!-- GUIA -->
+<section id="guia">
+  <div class="section-label">Educação ambiental</div>
+  <div class="section-title">Antes de descartar,<br>reutilize.</div>
+  <p class="section-body">A economia circular começa em casa. Veja as alternativas antes de levar seu item a um PEV.</p>
+
+  <div class="guia-grid">
+    <div class="guia-card" onclick="openGuia('movel')">
+      <span class="guia-emoji">🛋️</span>
+      <h3>Móveis e estofados</h3>
+      <p>Sofás, camas, armários e cadeiras têm alto potencial de doação e reforma.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Avalie se pode ser doado ou reformado</div>
+        <div class="guia-step"><div class="step-dot">2</div>Contate bazares e centros comunitários</div>
+        <div class="guia-step"><div class="step-dot">3</div>Se necessário, solicite a coleta pelo 156</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('eletrodomestico')">
+      <span class="guia-emoji">🧊</span>
+      <h3>Eletrodomésticos</h3>
+      <p>Geladeiras, fogões e máquinas contêm metais valiosos que podem ser recuperados.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Verifique se ainda funciona — doe ou venda</div>
+        <div class="guia-step"><div class="step-dot">2</div>Ferros-velhos aceitam para reaproveitamento</div>
+        <div class="guia-step"><div class="step-dot">3</div>Itens grandes: peça coleta pelo 156</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('eletronico')">
+      <span class="guia-emoji">💻</span>
+      <h3>Eletrônicos e celulares</h3>
+      <p>Maringá possui pontos de sucata eletrônica — o desafio é o desconhecimento e a concentração no centro.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Nunca jogue no lixo comum — metais pesados</div>
+        <div class="guia-step"><div class="step-dot">2</div>Use o mapa para achar o ponto mais próximo</div>
+        <div class="guia-step"><div class="step-dot">3</div>Lojas de operadoras aceitam celulares e baterias</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('colchao')">
+      <span class="guia-emoji">🛏️</span>
+      <h3>Colchões</h3>
+      <p>Um dos itens mais descartados irregularmente e muito lento para se decompor.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Verifique a logística reversa do fabricante</div>
+        <div class="guia-step"><div class="step-dot">2</div>Algumas lojas recolhem o antigo na entrega</div>
+        <div class="guia-step"><div class="step-dot">3</div>Registre a demanda nesta plataforma</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('pneu')">
+      <span class="guia-emoji">🔄</span>
+      <h3>Pneus</h3>
+      <p>Pneus inservíveis acumulam água e viram criadouro de mosquitos; a destinação é regulamentada.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Borracharias e revendas recebem pneus usados</div>
+        <div class="guia-step"><div class="step-dot">2</div>O programa Reciclanip organiza a coleta nacional</div>
+        <div class="guia-step"><div class="step-dot">3</div>Jamais queime — libera gases tóxicos</div>
+      </div>
+    </div>
+    <div class="guia-card" onclick="openGuia('outros')">
+      <span class="guia-emoji">❓</span>
+      <h3>Outros itens</h3>
+      <p>Não sabe onde descartar seu item? Use o assistente IA ou registre a demanda abaixo.</p>
+      <div class="guia-steps">
+        <div class="guia-step"><div class="step-dot">1</div>Pergunte ao assistente da plataforma</div>
+        <div class="guia-step"><div class="step-dot">2</div>Registre sua demanda para gerar dados</div>
+        <div class="guia-step"><div class="step-dot">3</div>Ajude a mapear o problema em Maringá</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="anat">
+    <h3 class="anat-title">Do que é feito o seu móvel?</h3>
+    <p class="anat-sub">Passe o cursor (ou toque) sobre cada peça para ver os materiais e como ela se classifica para reaproveitamento.</p>
+    <div class="anat-grid" id="anat-grid"></div>
+    <p class="anat-note">Classificação orientativa, baseada em critérios gerais de reforma e reciclagem. O que cada cooperativa aceita pode variar.</p>
+  </div>
+</section>
+
+<!-- DADOS -->
+<section id="dados">
+  <div class="section-label">Coleta de dados para a pesquisa</div>
+  <div class="section-title">Registre sua demanda.<br>Gere evidência.</div>
+  <p class="section-body" style="color:rgba(245,240,232,.6)">Não encontrou onde descartar? Seu registro vira dado que evidencia a lacuna na política pública de Maringá.</p>
+
+  <div class="dados-layout">
+    <div class="dados-form">
+      <h3>Não encontrei onde descartar</h3>
+      <div class="form-group">
+        <label>Tipo de inservível</label>
+        <select id="dem-tipo">
+          <option value="">Selecione...</option>
+          <option>Sofá / Estofado</option>
+          <option>Cama / Colchão</option>
+          <option>Armário / Guarda-roupa</option>
+          <option>Mesa / Cadeira</option>
+          <option>Geladeira / Freezer</option>
+          <option>Fogão / Micro-ondas</option>
+          <option>Máquina de lavar</option>
+          <option>Televisão / Monitor</option>
+          <option>Computador / Notebook</option>
+          <option>Celular / Tablet</option>
+          <option>Pneu</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Bairro em Maringá</label>
+        <input type="text" id="dem-bairro" placeholder="Ex: Jardim Alvorada">
+      </div>
+      <div class="form-group">
+        <label>Quantidade aproximada</label>
+        <select id="dem-qtd">
+          <option>1 item</option>
+          <option>2 a 5 itens</option>
+          <option>Mais de 5 itens</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Observação (opcional)</label>
+        <textarea id="dem-obs" placeholder="Descreva o item ou situação..."></textarea>
+      </div>
+      <p class="priv">Não informe nome, telefone nem o endereço da sua casa. No Mapa da comunidade o local aparece de forma aproximada (cerca de 100 m). Descrições e fotos são vistas só pela equipe da pesquisa.</p>
+      <button class="btn-lime" type="button" onclick="registrarDemanda()">Registrar demanda →</button>
+    </div>
+
+    <div class="metrics-panel">
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">📊</span><span class="metric-title">Demanda registrada por tipo</span></div>
+        <div class="metric-bar-wrap" id="demanda-bars"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">🏘️</span><span class="metric-title">Total de registros</span></div>
+        <div class="metric-num-large" id="total-registros">0</div>
+        <div class="metric-sub">demandas sem PEV disponível registradas até agora</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">📝</span><span class="metric-title">Participe da pesquisa</span></div>
+        <p style="font-size:.85rem;color:rgba(245,240,232,.6);line-height:1.65;margin-bottom:1rem">Responda a um questionário de cerca de 5 minutos. Suas respostas ajudam a dimensionar a demanda real em Maringá.</p>
+        <a class="btn-lime" href="questionario.html" style="display:inline-block;text-decoration:none">Responder questionário →</a>
+      </div>
+      <div class="metric-card">
+        <div class="metric-head"><span class="metric-icon">💡</span><span class="metric-title">Por que registrar?</span></div>
+        <p style="font-size:.85rem;color:rgba(245,240,232,.55);line-height:1.65">Cada registro é um dado que comprova a demanda reprimida por PEVs em Maringá. Esses números podem subsidiar a criação de infraestrutura oficial pelo poder público municipal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DENÚNCIA -->
+<section id="denuncia">
+  <div class="section-label">Mapeamento colaborativo</div>
+  <div class="section-title">Viu descarte irregular?<br>Registre aqui.</div>
+  <p class="section-body">Denúncias com foto e local criam um mapa do problema em Maringá — evidência concreta para políticas públicas.</p>
+
+  <div class="denuncia-layout">
+    <div class="denuncia-form">
+      <h3>Registrar descarte irregular</h3>
+      <div class="form-group">
+        <label>Tipo de resíduo encontrado</label>
+        <select id="den-tipo">
+          <option value="">Selecione...</option>
+          <option>Móveis / Estofados</option>
+          <option>Eletrodomésticos</option>
+          <option>Eletrônicos</option>
+          <option>Pneus</option>
+          <option>Misturado / Vários</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Local (bairro ou endereço)</label>
+        <input type="text" id="den-local" placeholder="Ex: Av. Colombo, Zona 7">
+      </div>
+      <div class="form-group">
+        <label>Volume aproximado</label>
+        <select id="den-volume">
+          <option>Pequeno (1-2 itens)</option>
+          <option>Médio (3-10 itens)</option>
+          <option>Grande (mais de 10 itens)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Descrição adicional</label>
+        <textarea id="den-desc" placeholder="Descreva o que encontrou..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Foto do local (opcional)</label>
+        <div class="photo-drop" id="photo-drop" onclick="document.getElementById('den-foto').click()">
+          <input type="file" id="den-foto" accept="image/*" capture="environment" hidden onchange="previewFoto(this)">
+          <span class="photo-ico">📷</span>
+          <span class="photo-txt">Tirar foto ou escolher da galeria</span>
+          <small>JPG, PNG ou WebP · até 5 MB</small>
+          <small style="display:block;margin-top:.3rem">Evite fotografar pessoas, rostos e placas de veículos. A foto é vista só pela equipe da pesquisa.</small>
+        </div>
+        <div class="photo-preview" id="photo-preview" style="display:none">
+          <img id="photo-img" alt="Pré-visualização da foto">
+          <button type="button" class="photo-remove" onclick="removerFoto()">✕ Remover foto</button>
+        </div>
+      </div>
+      <p class="priv">Não informe nome, telefone nem o endereço da sua casa. No Mapa da comunidade o local aparece de forma aproximada (cerca de 100 m). Descrições e fotos são vistas só pela equipe da pesquisa.</p>
+      <button class="btn-red" type="button" onclick="registrarDenuncia()">Enviar denúncia →</button>
+    </div>
+
+    <div class="denuncia-info">
+      <div class="info-card">
+        <h4>Como isso vira dado</h4>
+        <p>Cada denúncia pode ser georreferenciada e agrupada por bairro. O resultado é um mapa de calor do descarte irregular em Maringá, construído pela própria população.</p>
+      </div>
+      <div class="info-card">
+        <h4>Ajude a pesquisa</h4>
+        <p>Quer contribuir além da denúncia? Responda ao questionário (cerca de 5 minutos).</p>
+        <p style="margin-top:.8rem"><a href="questionario.html" style="color:var(--moss);font-weight:700">Responder questionário →</a></p>
+      </div>
+      <div class="info-card">
+        <h4>Registros recentes</h4>
+        <div class="recent-list" id="recent-list">
+          <div class="recent-item"><div class="recent-dot"></div><div><div class="recent-text">Sofás e colchões — Jardim Alvorada</div><div class="recent-time">Exemplo ilustrativo · Médio porte</div></div></div>
+          <div class="recent-item"><div class="recent-dot"></div><div><div class="recent-text">Geladeira e fogão — Vila Operária</div><div class="recent-time">Exemplo ilustrativo · Pequeno porte</div></div></div>
+          <div class="recent-item"><div class="recent-dot"></div><div><div class="recent-text">Pneus e móveis — Zona 5</div><div class="recent-time">Exemplo ilustrativo · Grande porte</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPA DA COMUNIDADE -->
+<section id="comunidade">
+  <div class="section-label">Mapa da comunidade</div>
+  <div class="section-title">O que a cidade já<br>está dizendo.</div>
+  <p class="section-body">Cada ponto vem de um registro real de demanda ou denúncia. Os locais são aproximados (cerca de 100 metros) para proteger quem registrou. Textos e endereços digitados não aparecem aqui.</p>
+  <div class="com-bar">
+    <label><input type="checkbox" id="com-den" checked> <span style="color:#d94f3d">●</span> Denúncias (<b id="com-n-den">0</b>)</label>
+    <label><input type="checkbox" id="com-dem" checked> <span style="color:#e0a24a">●</span> Demandas (<b id="com-n-dem">0</b>)</label>
+    <button type="button" id="com-refresh">Atualizar</button>
+  </div>
+  <div id="com-map"></div>
+  <p class="com-msg" id="com-msg">Carregando registros…</p>
+</section>
+
+<!-- ASSISTENTE IA -->
+<section id="assistente">
+  <div class="section-label">Inteligência artificial</div>
+  <div class="section-title">Assistente Re.Ciclo</div>
+  <p class="section-body">Tire dúvidas sobre descarte, reciclagem e pontos de coleta em Maringá. O assistente está em desenvolvimento e ficará disponível em breve. Enquanto isso, use o Guia e o Mapa de PEVs para encontrar onde descartar.</p>
+
+  <div class="ia-layout">
+    <div class="chat-window off">
+      <div class="chat-header">
+        <div class="chat-avatar">R</div>
+        <div>
+          <div class="chat-header-name">Assistente Re.Ciclo</div>
+          <div class="chat-header-status">● Em breve</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg bot">
+          <div class="msg-avatar">R</div>
+          <div class="msg-bubble">Olá! Ainda estou em preparação e, por enquanto, não consigo responder. Em breve poderei ajudar com dúvidas sobre descarte em Maringá. Até lá, consulte o Guia e o Mapa de PEVs.</div>
+        </div>
+      </div>
+      <div class="quick-chips">
+        <span class="chip" aria-disabled="true" style="pointer-events:none;opacity:.55">Onde jogar sofá fora?</span>
+        <span class="chip" aria-disabled="true" style="pointer-events:none;opacity:.55">Onde descartar eletrônicos?</span>
+        <span class="chip" aria-disabled="true" style="pointer-events:none;opacity:.55">O que é economia circular?</span>
+        <span class="chip" aria-disabled="true" style="pointer-events:none;opacity:.55">Como descartar colchão?</span>
+      </div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chat-input" placeholder="Disponível em breve" disabled aria-label="Campo de mensagem (indisponível)">
+        <button class="chat-send" type="button" disabled aria-label="Enviar (indisponível)">➤</button>
+      </div>
+    </div>
+
+    <div class="ia-info">
+      <div class="ia-tip"><h4>O que vem por aí</h4><p>Quando estiver disponível, o assistente vai responder dúvidas sobre descarte e reciclagem em Maringá e sempre recomendará confirmar as regras atuais com o serviço responsável.</p></div>
+      
+      <div class="ia-tip"><h4>Limitação importante</h4><p>O assistente não substitui a orientação oficial da Prefeitura de Maringá. Para coleta especial de grande porte, consulte a Secretaria de Meio Ambiente ou ligue 156.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Re<span>.</span>Ciclo</div>
+  <p>Plataforma digital de georreferenciamento para resíduos inservíveis</p>
+  <p>Maringá — Paraná · Brasil</p>
+  <div class="footer-links">
+    <a href="#hero">↑ Topo</a>
+    <a href="#mapa">Mapa</a>
+    <a href="#modelo-ideal">Modelo ideal</a>
+    <a href="#guia">Guia</a>
+    <a href="#dados">Dados</a>
+    <a href="#denuncia">Denunciar</a>
+    <a href="#comunidade">Comunidade</a>
+    <a href="#assistente">Assistente IA</a>
+  </div>
+  <div class="footer-credits">
+    João Pedro Arraiz Nascimento · Colégio Sesi Maringá · 2025<br>
+    Orientador: Lucas Forlin Pereira · Coorientadora: Mariana Marques Nogueira Wendt
+  </div>
+  <div class="paleta" role="group" aria-label="Paleta de cores"><span>Paleta</span>
+    <button type="button" data-t="terra" aria-label="Terra roxa" title="Terra roxa" style="background:linear-gradient(135deg,#3d2236 50%,#b6e24b 50%)"></button>
+    <button type="button" data-t="floresta" aria-label="Floresta" title="Floresta" style="background:linear-gradient(135deg,#234b1b 50%,#a8e63d 50%)"></button>
+    <button type="button" data-t="violeta" aria-label="Violeta" title="Violeta" style="background:linear-gradient(135deg,#3b2a6b 50%,#f4964a 50%)"></button>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+var TEMA={}; (function(){ var cs=getComputedStyle(document.documentElement); ['moss','lime','abyss','earth','red'].forEach(function(k){ TEMA[k]=cs.getPropertyValue('--'+k).trim(); }); })();
+
+/* ═══════════════════════════════════════════════════════════════
+   PARTE 1 — NÚCLEO (não depende do Leaflet)
+   Navegação, listas, formulários, chat e guia funcionam mesmo
+   que o mapa demore ou falhe ao carregar.
+═══════════════════════════════════════════════════════════════ */
+var CENTER = [-23.4253, -51.9386];           // Catedral de Maringá
+var POP = 409657;                            // Censo 2022 (IBGE)
+var TIPO_LABEL = { eletronico: 'Sucata eletrônica', volumoso: 'Móveis e volumosos' };
+
+var PEVS = [
+  { id:1,  nome:'Paço Municipal',            addr:'Av. XV de Novembro, 701 — Centro',              q:'Avenida XV de Novembro, 701, Maringá, PR, Brasil',            qs:'Avenida XV de Novembro, Maringá, PR, Brasil',            tipo:'eletronico', ico:'🏛️', items:['Sucata eletrônica'],              fonte:'Sescap-PR (2025)',          lat:-23.4215, lng:-51.9345 },
+  { id:2,  nome:'Câmara Municipal',          addr:'Av. Papa João XXIII, 239',                      q:'Avenida Papa João XXIII, 239, Maringá, PR, Brasil',           qs:'Avenida Papa João XXIII, Maringá, PR, Brasil',           tipo:'eletronico', ico:'🏛️', items:['Sucata eletrônica'],              fonte:'Sescap-PR (2025)',          lat:-23.4235, lng:-51.9325 },
+  { id:3,  nome:'Tiro de Guerra de Maringá', addr:'Av. Mandacaru, 730 — Vila Santa Isabel',        q:'Avenida Mandacaru, 730, Maringá, PR, Brasil',                 qs:'Avenida Mandacaru, Maringá, PR, Brasil',                 tipo:'eletronico', ico:'🛡️', items:['Sucata eletrônica','Vidro'],      fonte:'Sescap-PR (2025)',          lat:-23.4300, lng:-51.9560 },
+  { id:4,  nome:'4º Batalhão da PM',         addr:'Rua Mitsuzo Taguchi, 99 — Vila Nova',           q:'Rua Mitsuzo Taguchi, 99, Maringá, PR, Brasil',                qs:'Rua Mitsuzo Taguchi, Maringá, PR, Brasil',               tipo:'eletronico', ico:'🛡️', items:['Sucata eletrônica','Vidro'],      fonte:'Sescap-PR (2025)',          lat:-23.4470, lng:-51.9300 },
+  { id:5,  nome:'SESI',                      addr:'Rua Antônio Carniel, 499 — Zona 5',             q:'Rua Antônio Carniel, 499, Maringá, PR, Brasil',               qs:'Rua Antônio Carniel, Maringá, PR, Brasil',               tipo:'eletronico', ico:'🏫', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4130, lng:-51.9215, antigo:true },
+  { id:6,  nome:'SESC-PR',                   addr:'Rua Prof. Lauro Eduardo Werneck, 531 — Zona 7', q:'Rua Professor Lauro Eduardo Werneck, 531, Maringá, PR, Brasil', qs:'Rua Professor Lauro Eduardo Werneck, Maringá, PR, Brasil', tipo:'eletronico', ico:'🏫', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4075, lng:-51.9325, antigo:true },
+  { id:7,  nome:'Terminal Urbano',           addr:'Av. Tamandaré, 630 — Centro',                   q:'Avenida Tamandaré, 630, Maringá, PR, Brasil',                 qs:'Avenida Tamandaré, Maringá, PR, Brasil',                 tipo:'eletronico', ico:'🚌', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4215, lng:-51.9400, antigo:true },
+  { id:8,  nome:'Terminal Rodoviário',       addr:'Av. Tuiuti, 180 — Zona 8',                      q:'Avenida Tuiuti, 180, Maringá, PR, Brasil',                    qs:'Avenida Tuiuti, Maringá, PR, Brasil',                    tipo:'eletronico', ico:'🚌', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4140, lng:-51.9400, antigo:true },
+  { id:9,  nome:'Faculdade Cidade Verde',    addr:'Av. Horácio Raccanello Filho, 5950',            q:'Avenida Horácio Raccanello Filho, 5950, Maringá, PR, Brasil', qs:'Avenida Horácio Raccanello Filho, Maringá, PR, Brasil',  tipo:'eletronico', ico:'🎓', items:['Sucata eletrônica'],              fonte:'Prefeitura / Funverde',     lat:-23.4420, lng:-51.9540, antigo:true },
+  { id:10, nome:'Super Muffato',             addr:'Av. Cerro Azul, 2075 — Jd. Novo Horizonte',     q:'Avenida Cerro Azul, 2075, Maringá, PR, Brasil',               qs:'Avenida Cerro Azul, Maringá, PR, Brasil',                tipo:'eletronico', ico:'🛒', items:['Sucata eletrônica','Lâmpadas'],   fonte:'Prefeitura / Funverde',     lat:-23.4085, lng:-51.9545, antigo:true }
+];
+
+var VOLUMOSOS = [
+  { id:101, nome:'Pedreira Municipal', addr:'Estrada 200, PR-317, km 90 (saída para Astorga)', q:'Pedreira Municipal, Maringá, PR, Brasil', tipo:'volumoso', items:['Móveis','Colchões'], nota:'Destino divulgado pela Prefeitura para móveis. Confirme regras e horários antes de ir.' },
+  { id:102, nome:'Ecoponto — Jardim Piatã', addr:'Jardim Piatã', tipo:'volumoso', items:['Recicláveis','Inservíveis'], nota:'Primeiro ecoponto fixo previsto pela Prefeitura; o recebimento foi suspenso após um incêndio. Confirme se já reabriu.' },
+  { id:103, nome:'Coleta de itens grandes — 156', addr:'Solicitação por telefone/aplicativo: 156', tipo:'volumoso', items:['Móveis','Eletrodomésticos'], nota:'A Prefeitura recolhe itens grandes mediante solicitação pelo 156.' }
+];
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function fmt(n){ return n.toLocaleString('pt-BR'); }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function showToast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },3200); }
+function dirUrl(p){ return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.q||(p.nome+', Maringá, PR')); }
+function dist(a,b){
+  var R=6371000, toR=function(x){return x*Math.PI/180;}, dLat=toR(b[0]-a[0]), dLng=toR(b[1]-a[1]);
+  var h=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toR(a[0]))*Math.cos(toR(b[0]))*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function rng(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- navegação (à prova de iframe) ---------- */
+function goTo(sel){
+  var el=document.querySelector(sel); if(!el) return;
+  try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }
+  catch(e){ try{ window.scrollTo(0, el.getBoundingClientRect().top + (window.pageYOffset||0) - 70); }catch(e2){} }
+}
+function openExternal(url){
+  var w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){}
+  if(w){ try{ w.opener=null; }catch(e){} return; }
+  // popup bloqueado: mostra o link para copiar
+  $('modal-content').innerHTML='<button class="close-btn" onclick="closeModal()">✕</button><h2>Abrir no Google Maps</h2>'+
+    '<p style="font-size:.9rem;color:var(--mid);line-height:1.6;margin-top:.5rem">O navegador bloqueou a abertura automática. Copie o link abaixo e cole em uma nova aba:</p>'+
+    '<input class="link-box" id="link-box" readonly value="'+esc(url)+'" onclick="this.select()">'+
+    '<button onclick="copiarLink()" style="margin-top:1rem;background:var(--moss);color:var(--lime);border:none;border-radius:999px;padding:.7rem 1.6rem;font-weight:700;cursor:pointer;font-family:\'Figtree\',sans-serif">Copiar link</button>';
+  $('modal-overlay').classList.add('open');
+}
+function copiarLink(){
+  var b=$('link-box'); b.select();
+  try{ document.execCommand('copy'); showToast('✅ Link copiado!'); }catch(e){ showToast('Selecione e copie o link manualmente'); }
+}
+// captura os cliques antes do Leaflet (que bloqueia a propagação dentro dos popups)
+document.addEventListener('click',function(e){
+  var t=e.target; if(!t||!t.closest) return;
+  var ext=t.closest('a[data-ext]');
+  if(ext){ e.preventDefault(); openExternal(ext.href); return; }
+  var a=t.closest('a[href^="#"]');
+  if(a){ var h=a.getAttribute('href'); if(h&&h.length>1){ e.preventDefault(); goTo(h); } }
+},true);
+
+function initNavSpy(){
+  if(!('IntersectionObserver' in window)) return;
+  var links={}; document.querySelectorAll('.nav-links a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){
+      document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active'); });
+      var a=links[en.target.id]; if(a) a.classList.add('active');
+    }});
+  },{rootMargin:'-45% 0px -50% 0px'});
+  ['mapa','modelo-ideal','guia','dados','denuncia','assistente'].forEach(function(id){ var el=$(id); if(el) io.observe(el); });
+}
+
+/* ---------- popups e lista ---------- */
+function precTxt(p){
+  if(p.prec==='end') return '📍 Posição ajustada pelo endereço.';
+  if(p.prec==='rua') return '📍 Posição aproximada (centro da rua).';
+  return '📍 Posição aproximada — use "Como chegar" para o endereço exato.';
+}
+function popupHtml(p){
+  return '<div class="pp"><span class="pp-badge">'+TIPO_LABEL[p.tipo]+'</span><h4>'+esc(p.nome)+'</h4><p>'+esc(p.addr)+'</p>'+
+    '<div class="pp-tags">'+p.items.map(function(i){return '<span>'+esc(i)+'</span>';}).join('')+'</div>'+
+    '<a class="pp-btn" data-ext target="_blank" rel="noopener" href="'+dirUrl(p)+'">Como chegar ↗</a>'+
+    '<small>'+precTxt(p)+(p.antigo?' Lista antiga: confirme se o ponto ainda recebe.':'')+'<br>Fonte: '+esc(p.fonte)+'</small></div>';
+}
+
+var filtroAtivo='todos', selectedPEV=null, userMarker=null;
+var heroMap=null, mainMap=null, idealMapRef=null, covLayer=null;
+var heroMarkers={}, mainMarkers={};
+var onPevsMoved=function(){};
+
+function matches(p){
+  var q=$('search-input').value.trim().toLowerCase();
+  var okF = filtroAtivo==='todos' || p.tipo===filtroAtivo;
+  var okS = !q || (p.nome+' '+p.addr+' '+p.items.join(' ')).toLowerCase().indexOf(q)>-1;
+  return okF && okS;
+}
+function applyFilter(){
+  if(!mainMap) return;
+  PEVS.forEach(function(p){ var m=mainMarkers[p.id]; if(!m) return; if(matches(p)){ if(!mainMap.hasLayer(m)) m.addTo(mainMap); } else mainMap.removeLayer(m); });
+}
+function renderPEVList(){
+  var list=$('pev-list'); list.innerHTML='';
+  var all=PEVS.concat(VOLUMOSOS).filter(matches);
+  if(!all.length){ list.innerHTML='<div class="pev-card nopin"><div class="pev-addr">Nenhum ponto encontrado para essa busca.</div></div>'; return; }
+  all.forEach(function(p){
+    var pin=!!p.lat;
+    var div=document.createElement('div');
+    div.className='pev-card'+(pin?'':' nopin')+(selectedPEV===p.id?' selected':'');
+    div.setAttribute('data-id',p.id);
+    div.innerHTML=
+      '<div class="pev-card-head"><div class="pev-name">'+(pin?'📍':'ℹ️')+' '+esc(p.nome)+'</div>'+
+      '<span class="pev-type-badge badge-'+p.tipo+'">'+(p.tipo==='eletronico'?'Eletrônico':'Volumoso')+'</span></div>'+
+      '<div class="pev-addr">'+esc(p.addr)+'</div>'+
+      (p.nota?'<div class="pev-note">'+esc(p.nota)+'</div>':'')+
+      '<div class="pev-items">'+p.items.map(function(i){return '<span class="pev-item-tag">'+esc(i)+'</span>';}).join('')+'</div>'+
+      (p.q?'<a class="pev-link" data-ext target="_blank" rel="noopener" href="'+dirUrl(p)+'">Como chegar ↗</a>':'');
+    if(pin) div.addEventListener('click',function(e){ if(e.target.closest('a')) return; selectPEV(p.id,true); });
+    list.appendChild(div);
+  });
+}
+function selectPEV(id,fly){
+  selectedPEV=id;
+  var p=PEVS.filter(function(x){return x.id===id;})[0]; if(!p) return;
+  if(mainMap && mainMarkers[id]){
+    var m=mainMarkers[id]; if(!mainMap.hasLayer(m)) m.addTo(mainMap);
+    if(fly) mainMap.flyTo([p.lat,p.lng],16,{duration:.9});
+    setTimeout(function(){ m.openPopup(); }, fly?900:0);
+  }
+  renderPEVList();
+  var el=document.querySelector('.pev-card[data-id="'+id+'"]'); if(el) el.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function setFilter(f,btn){
+  filtroAtivo=f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderPEVList(); applyFilter();
+}
+function buildCov(){
+  if(!covLayer) return;
+  covLayer.clearLayers();
+  PEVS.forEach(function(p){ L.circle([p.lat,p.lng],{radius:1000,color:TEMA.moss,weight:1,opacity:.6,fillColor:TEMA.lime,fillOpacity:.18,interactive:false}).addTo(covLayer); });
+}
+function toggleCov(on){
+  if(!mainMap||!covLayer){ showToast('O mapa ainda não carregou'); return; }
+  buildCov();
+  if(on) covLayer.addTo(mainMap); else mainMap.removeLayer(covLayer);
+}
+function locateMe(){
+  if(!navigator.geolocation){ showToast('⚠️ Seu navegador não permite localização'); return; }
+  showToast('📍 Buscando sua localização…');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var me=[pos.coords.latitude,pos.coords.longitude];
+    var best=null,bd=Infinity; PEVS.forEach(function(p){ var d=dist(me,[p.lat,p.lng]); if(d<bd){bd=d;best=p;} });
+    var card=$('near-card'); card.style.display='block';
+    if(bd>60000){ card.innerHTML='Você parece estar fora de Maringá — o ponto mais próximo fica a '+fmt(Math.round(bd/1000))+' km.'; }
+    else {
+      var dtxt = bd<1000 ? Math.round(bd)+' m' : (bd/1000).toFixed(1).replace('.',',')+' km';
+      card.innerHTML='Ponto mais próximo: <b>'+esc(best.nome)+'</b> — a cerca de <b>'+dtxt+'</b> em linha reta.<br><a data-ext target="_blank" rel="noopener" href="'+dirUrl(best)+'">Traçar rota ↗</a>';
+    }
+    if(mainMap){
+      if(userMarker) mainMap.removeLayer(userMarker);
+      userMarker=L.marker(me,{icon:L.divIcon({className:'',html:'<div class="me-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(mainMap).bindTooltip('Você está aqui');
+      mainMap.fitBounds(L.latLngBounds([me,[best.lat,best.lng]]),{padding:[80,80],maxZoom:16});
+    }
+    selectPEV(best.id,false);
+  },function(){ showToast('⚠️ Não foi possível obter sua localização'); },{enableHighAccuracy:true,timeout:10000});
+}
+
+/* ---------- guia (modais) ---------- */
+var guiaData = {
+  movel:{ titulo:'🛋️ Móveis e estofados', corpo:'<p>Os pontos fixos de Maringá são voltados sobretudo a sucata eletrônica, vidro, óleo e pilhas. Para móveis, as opções divulgadas são a <strong>Pedreira Municipal</strong> e a <strong>coleta solicitada pelo 156</strong>.</p><h4 style="margin:1rem 0 .5rem;color:var(--moss)">O que você pode fazer:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Doe para bazares, igrejas ou centros comunitários</li><li>Anuncie gratuitamente em grupos e marketplaces locais</li><li>Procure reformadores de móveis</li><li>Solicite a coleta de itens grandes pelo <strong>156</strong></li><li><strong>Registre sua demanda</strong> nesta plataforma se não conseguir nenhuma alternativa</li></ul>'},
+  eletrodomestico:{ titulo:'🧊 Eletrodomésticos', corpo:'<p>Geladeiras contêm gás refrigerante que não pode ser liberado. Fogões e máquinas têm metais recuperáveis.</p><h4 style="margin:1rem 0 .5rem;color:var(--moss)">Alternativas:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Ferros-velhos compram ou retiram eletrodomésticos</li><li>Assistências técnicas podem reaproveitar peças</li><li>Itens grandes: solicite a coleta pelo 156</li><li>Verifique a logística reversa do fabricante</li></ul>'},
+  eletronico:{ titulo:'💻 Eletrônicos — pontos em Maringá', corpo:'<p>Este é o segmento com mais pontos de entrega, mas eles se concentram perto do centro. Veja o mapa para achar o mais próximo.</p><h4 style="margin:1rem 0 .5rem;color:var(--moss)">Dicas:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Nunca descarte em lixo comum — metais pesados contaminam solo e água</li><li>Confira o endereço antes de ir: algumas listas são antigas</li><li>Lojas de operadoras costumam aceitar celulares e baterias</li></ul>'},
+  colchao:{ titulo:'🛏️ Colchões', corpo:'<p>Colchões ocupam muito espaço e demoram a se decompor. Estão entre os itens mais descartados irregularmente.</p><h4 style="margin:1rem 0 .5rem;color:var(--moss)">O que fazer:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Lojas de colchões às vezes recolhem o antigo na entrega do novo</li><li>Verifique a logística reversa do fabricante</li><li>Solicite a coleta de itens grandes pelo 156</li><li>Registre a demanda nesta plataforma</li></ul>'},
+  pneu:{ titulo:'🔄 Pneus', corpo:'<p>Pneus inservíveis acumulam água e viram criadouro de mosquitos. A destinação é regulamentada pela Resolução Conama 416/2009.</p><h4 style="margin:1rem 0 .5rem;color:var(--moss)">Onde entregar:</h4><ul style="padding-left:1.2rem;line-height:2"><li>Borracharias e revendedoras recebem pneus usados</li><li>Programa Reciclanip — rede nacional de coleta</li><li>Jamais queime — libera gases tóxicos</li></ul>'},
+  outros:{ titulo:'❓ Outros itens', corpo:'<p>Para itens que não se encaixam nas categorias acima, use o assistente Re.Ciclo ou registre a demanda para gerar dados sobre o problema.</p>'}
+};
+function openGuia(tipo){
+  var d=guiaData[tipo];
+  $('modal-content').innerHTML='<button class="close-btn" onclick="closeModal()">✕</button><h2>'+d.titulo+'</h2>'+
+    '<div style="margin-top:1rem;font-size:.95rem;line-height:1.7;color:var(--mid)">'+d.corpo+'</div>'+
+    '<button onclick="closeModal();goTo(\'#dados\')" style="margin-top:1.5rem;background:var(--moss);color:var(--lime);border:none;border-radius:999px;padding:.8rem 1.8rem;font-size:.9rem;font-weight:700;cursor:pointer;font-family:\'Figtree\',sans-serif">Registrar demanda →</button>';
+  $('modal-overlay').classList.add('open');
+}
+function closeModal(){ $('modal-overlay').classList.remove('open'); }
+
+/* ---------- demandas, denúncias e foto ---------- */
+var demandas=0, denuncias=0, fotoDataUrl=null, demandaPorTipo={};
+
+function animateNum(id,target){
+  var el=$(id), cur=0, step=Math.max(1,Math.floor(target/30));
+  if(!target){ el.textContent=0; return; }
+  var t=setInterval(function(){ cur=Math.min(cur+step,target); el.textContent=cur; if(cur>=target)clearInterval(t); },40);
+}
+function renderBars(){
+  var box=$('demanda-bars'), entries=Object.keys(demandaPorTipo).map(function(k){return [k,demandaPorTipo[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  if(!entries.length){ box.innerHTML='<div class="metric-empty">Ainda não há registros. Envie uma demanda ao lado para ver o gráfico ganhar forma.</div>'; return; }
+  box.innerHTML=entries.map(function(en){
+    var pct=Math.round(en[1]/demandas*100);
+    return '<div class="metric-row"><span class="metric-label">'+esc(en[0])+'</span><div class="metric-bar-bg"><div class="metric-bar-fill" style="width:'+pct+'%"></div></div><span class="metric-val">'+pct+'%</span></div>';
+  }).join('');
+}
+function updateStats(){
+  $('stat-pevs').textContent=PEVS.length;
+  $('chip-pevs').textContent=PEVS.length+' pontos de sucata eletrônica';
+  animateNum('stat-demandas',demandas);
+  animateNum('stat-denuncias',denuncias);
+  $('total-registros').textContent=demandas;
+  renderBars();
+}
+async function registrarDemanda(){
+  var tipo=$('dem-tipo').value, bairro=$('dem-bairro').value.trim();
+  if(!tipo||!bairro){ showToast('⚠️ Preencha o tipo e o bairro'); return; }
+  var pt=await geocodar(bairro);
+  var st=await salvarRegistro('demandas',{lat:pt?pt[0]:null,lng:pt?pt[1]:null,tipo:tipo,bairro:bairro,quantidade:$('dem-qtd').value,observacao:$('dem-obs').value.trim()});
+  if(st==='erro'){ showToast('⚠️ Não foi possível enviar agora. Tente de novo.'); return; }
+  demandas++; demandaPorTipo[tipo]=(demandaPorTipo[tipo]||0)+1;
+  $('dem-tipo').value=''; $('dem-bairro').value=''; $('dem-obs').value='';
+  updateStats(); if(window.comMap) carregarComunidade(); carregarContagens(); showToast(st==='ok'?'✅ Demanda registrada! Obrigado.':'✅ Registrada nesta sessão (banco ainda não conectado).');
+}
+function reduzirFoto(src){
+  return new Promise(function(res){
+    var img=new Image();
+    img.onload=function(){
+      var t=[[1000,.72],[800,.6],[640,.5]];
+      for(var i=0;i<t.length;i++){
+        var sc=Math.min(1,t[i][0]/Math.max(img.width,img.height));
+        var c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        var d=c.toDataURL('image/jpeg',t[i][1]);
+        if(d.length<=380000) return res(d);
+      }
+      res(null);
+    };
+    img.onerror=function(){ res(null); };
+    img.src=src;
+  });
+}
+function previewFoto(inp){
+  var f=inp.files&&inp.files[0]; if(!f) return;
+  if(f.type.indexOf('image/')!==0){ showToast('⚠️ Selecione um arquivo de imagem'); inp.value=''; return; }
+  if(f.size>5*1024*1024){ showToast('⚠️ A imagem passa de 5 MB'); inp.value=''; return; }
+  var r=new FileReader();
+  r.onload=function(e){ fotoDataUrl=e.target.result; $('photo-img').src=fotoDataUrl; $('photo-preview').style.display='block'; $('photo-drop').style.display='none'; };
+  r.onerror=function(){ showToast('⚠️ Não foi possível ler a imagem'); };
+  r.readAsDataURL(f);
+}
+function removerFoto(){
+  fotoDataUrl=null; $('den-foto').value=''; $('photo-img').removeAttribute('src');
+  $('photo-preview').style.display='none'; $('photo-drop').style.display='flex';
+}
+function openFoto(src){
+  $('modal-content').innerHTML='<button class="close-btn" onclick="closeModal()">✕</button><h2>Foto da denúncia</h2><img src="'+src+'" alt="Foto da denúncia" style="width:100%;border-radius:1rem;margin-top:1rem">';
+  $('modal-overlay').classList.add('open');
+}
+async function registrarDenuncia(){
+  var tipo=$('den-tipo').value, local=$('den-local').value.trim();
+  if(!tipo||!local){ showToast('⚠️ Preencha o tipo e o local'); return; }
+  var foto=fotoDataUrl, vol=$('den-volume').value;
+  var pt=await geocodar(local);
+  var fotoRed=foto?await reduzirFoto(foto):null;
+  if(foto&&!fotoRed) showToast('⚠️ Foto muito grande: a denúncia seguirá sem foto');
+  var st=await salvarRegistro('denuncias',{lat:pt?pt[0]:null,lng:pt?pt[1]:null,tipo:tipo,localizacao:local,volume:vol,descricao:$('den-desc').value.trim(),tem_foto:!!fotoRed,foto:fotoRed});
+  if(st==='erro'){ showToast('⚠️ Não foi possível enviar agora. Tente de novo.'); return; }
+  denuncias++;
+  var item=document.createElement('div'); item.className='recent-item';
+  item.innerHTML='<div class="recent-dot"></div><div style="flex:1"><div class="recent-text">'+esc(tipo)+' — '+esc(local)+'</div>'+
+    '<div class="recent-time">Agora mesmo · '+esc(vol)+(foto?' · 📷 com foto':'')+'</div></div>'+
+    (foto?'<img class="recent-thumb" alt="Foto da denúncia" src="'+foto+'">':'');
+  if(foto) item.querySelector('.recent-thumb').addEventListener('click',function(){ openFoto(foto); });
+  $('recent-list').prepend(item);
+  $('den-tipo').value=''; $('den-local').value=''; $('den-desc').value='';
+  removerFoto(); updateStats(); if(window.comMap) carregarComunidade(); carregarContagens(); showToast(st==='ok'?'🚨 Denúncia enviada! Obrigado.':'🚨 Registrada nesta sessão (banco ainda não conectado).');
+}
+
+/* ---------- pesquisa: consentimento, e-mail e banco de dados ---------- */
+/* Preencha com os dados do seu projeto no Supabase (Project Settings > API). A chave "anon" é pública por natureza; a segurança vem das regras de RLS do arquivo banco-supabase.sql. */
+var BACKEND={url:'https://miqaubeveodxgqfqwvql.supabase.co',key:'sb_publishable_Gbm4W9W3Nlx6QnkLCA75eg_Jfiz5fyj'};
+
+async function salvarRegistro(tabela,dados){
+  if(!BACKEND.url||!BACKEND.key) return 'local';
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/'+tabela,{method:'POST',headers:{'Content-Type':'application/json',apikey:BACKEND.key,Prefer:'return=minimal'},body:JSON.stringify(dados)});
+    return r.ok?'ok':'erro';
+  }catch(e){ return 'erro'; }
+}
+
+function initMenu(){
+  var b=$('nav-toggle'), m=$('nav-links'); if(!b||!m) return;
+  function fechar(){ m.classList.remove('open'); b.setAttribute('aria-expanded','false'); b.textContent='☰'; b.setAttribute('aria-label','Abrir menu'); }
+  b.addEventListener('click',function(){ var a=m.classList.toggle('open'); b.setAttribute('aria-expanded',a?'true':'false'); b.textContent=a?'✕':'☰'; b.setAttribute('aria-label',a?'Fechar menu':'Abrir menu'); });
+  m.addEventListener('click',function(e){ if(e.target.tagName==='A') fechar(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') fechar(); });
+}
+/* ---------- educação ambiental: anatomia do móvel ---------- */
+var MOVEIS=[
+ {e:'🛋️',n:'Sofá e estofados',c:'Reformável',k:'ok',m:['Estrutura de madeira ou MDF','Espuma de poliuretano','Tecido, couro ou corino','Molas de aço','Grampos e pregos'],q:'Com a estrutura firme e sem cupim, vale reformar trocando espuma e tecido. Madeira e aço podem ser separados; espuma e tecido usados costumam virar rejeito.'},
+ {e:'🚪',n:'Guarda-roupa e armário',c:'Reformável se estiver seco',k:'ok',m:['Painéis de MDF ou MDP','Revestimento melamínico','Dobradiças e corrediças de metal','Puxadores','Espelho ou vidro'],q:'Painel seco e sem inchaço pode ser reaproveitado ou reformado. MDF que molhou incha e não se recupera. Metais e vidro seguem para reciclagem.'},
+ {e:'🪑',n:'Mesa de madeira maciça',c:'Alto reaproveitamento',k:'ok',m:['Madeira maciça','Verniz ou laca','Parafusos e ferragens'],q:'É o caso mais favorável: lixar, consertar e envernizar costuma bastar. Em fim de vida, a madeira ainda pode servir de matéria-prima para marcenaria.'},
+ {e:'💺',n:'Cadeira com assento',c:'Parcialmente reciclável',k:'mid',m:['Estrutura de madeira, metal ou plástico','Espuma no assento','Tecido ou courino','Parafusos'],q:'A estrutura costuma ser reaproveitada e o assento trocado. Metal e plástico vão para reciclagem; espuma e tecido desgastados são rejeito.'},
+ {e:'🛏️',n:'Colchão',c:'Difícil reaproveitamento',k:'low',m:['Espuma de poliuretano ou molas de aço','Tecidos e mantas','Cola e fibras'],q:'Usado, em geral não é reformado nem doado. O aço das molas é reciclável, mas exige desmontagem. Consulte a logística reversa do fabricante.'}
+];
+function renderMoveis(){
+  var g=$('anat-grid'); if(!g) return;
+  g.innerHTML=MOVEIS.map(function(x){
+    return '<div class="anat-card" tabindex="0" role="button" aria-label="'+esc(x.n)+': ver materiais">'+
+      '<span class="anat-emoji">'+x.e+'</span><h4>'+esc(x.n)+'</h4><span class="anat-badge '+x.k+'">'+esc(x.c)+'</span>'+
+      '<span class="anat-hint">Passe o cursor ou toque ↗</span>'+
+      '<div class="anat-tip"><b>Materiais</b><div class="anat-chips">'+x.m.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div><b>Como se classifica</b><p>'+esc(x.q)+'</p></div></div>';
+  }).join('');
+  Array.prototype.forEach.call(g.children,function(c){
+    c.addEventListener('click',function(){ var on=c.classList.contains('on'); Array.prototype.forEach.call(g.children,function(o){o.classList.remove('on');}); if(!on) c.classList.add('on'); });
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){
+  renderMoveis(); initMenu();
+});
+
+async function carregarContagens(){
+  if(!BACKEND.url||!BACKEND.key) return;
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/rpc/contagens',{method:'POST',headers:{'Content-Type':'application/json',apikey:BACKEND.key},body:'{}'});
+    if(!r.ok) return;
+    var c=await r.json();
+    demandaPorTipo=c.demandas_por_tipo||{};
+    demandas=Object.keys(demandaPorTipo).reduce(function(t,k){ return t+demandaPorTipo[k]; },0);
+    denuncias=c.denuncias_total||0;
+    updateStats();
+  }catch(e){}
+}
+
+/* ---------- mapa da comunidade (dados do Supabase) ---------- */
+var comMap=null, comLayers={den:null,dem:null};
+async function geocodar(txt){
+  try{ var pt=await geocode(txt+', Maringá, PR'); return pt?[Math.round(pt[0]*1000)/1000,Math.round(pt[1]*1000)/1000]:null; }catch(e){ return null; }
+}
+async function lerTabela(tab,cols){
+  if(!BACKEND.url||!BACKEND.key) return null;
+  try{
+    var r=await fetch(BACKEND.url+'/rest/v1/'+tab+'?select='+cols+'&lat=not.is.null&order=criado_em.desc&limit=1000',{headers:{apikey:BACKEND.key}});
+    return r.ok?await r.json():null;
+  }catch(e){ return null; }
+}
+function agrupar(rows){
+  var g={}; rows.forEach(function(r){ var k=r.lat+','+r.lng; if(!g[k]) g[k]={lat:r.lat,lng:r.lng,n:0,tipos:{}}; g[k].n++; g[k].tipos[r.tipo]=(g[k].tipos[r.tipo]||0)+1; });
+  return Object.keys(g).map(function(k){ return g[k]; });
+}
+function desenharGrupos(grupos,cor){
+  var lg=L.layerGroup();
+  grupos.forEach(function(g){
+    var t=Object.keys(g.tipos).map(function(x){ return esc(x)+' ('+g.tipos[x]+')'; }).join('<br>');
+    L.circleMarker([g.lat,g.lng],{radius:8+Math.min(g.n,12)*1.5,color:'#fff',weight:2,fillColor:cor,fillOpacity:.85})
+      .bindPopup('<b>'+g.n+' registro'+(g.n>1?'s':'')+'</b><br>'+t).addTo(lg);
+  });
+  return lg;
+}
+function aplicarCamadas(){
+  [['den','com-den'],['dem','com-dem']].forEach(function(x){
+    var l=comLayers[x[0]]; if(!l) return;
+    if($(x[1]).checked){ if(!comMap.hasLayer(l)) l.addTo(comMap); } else if(comMap.hasLayer(l)) comMap.removeLayer(l);
+  });
+}
+async function carregarComunidade(){
+  var msg=$('com-msg');
+  if(!BACKEND.url||!BACKEND.key){ msg.textContent='O banco de dados ainda não está conectado.'; return; }
+  var a=await lerTabela('denuncias','tipo,volume,lat,lng,criado_em'), b=await lerTabela('demandas','tipo,lat,lng,criado_em');
+  if(a===null&&b===null){ msg.textContent='Não foi possível carregar os registros agora. Tente atualizar em instantes.'; return; }
+  a=a||[]; b=b||[];
+  ['den','dem'].forEach(function(k){ if(comLayers[k]&&comMap.hasLayer(comLayers[k])) comMap.removeLayer(comLayers[k]); });
+  comLayers.den=desenharGrupos(agrupar(a),'#d94f3d'); comLayers.dem=desenharGrupos(agrupar(b),'#e0a24a');
+  $('com-n-den').textContent=a.length; $('com-n-dem').textContent=b.length;
+  aplicarCamadas();
+  var pts=a.concat(b).map(function(r){ return [r.lat,r.lng]; });
+  if(pts.length){ comMap.fitBounds(pts,{padding:[50,50],maxZoom:15}); msg.textContent='Mostrando '+pts.length+' registro'+(pts.length>1?'s':'')+' com localização aproximada.'; }
+  else msg.textContent='Ainda não há registros no mapa. Seja a primeira pessoa a contribuir! 💚';
+}
+function initCom(){
+  $('com-map').innerHTML='';
+  comMap=L.map('com-map',{zoomControl:false,scrollWheelZoom:false}).setView(CENTER,12);
+  L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}).addTo(comMap);
+  L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9}).addTo(comMap);
+  L.control.zoom({position:'bottomright'}).addTo(comMap);
+  comMap.on('focus',function(){ comMap.scrollWheelZoom.enable(); });
+  comMap.on('blur',function(){ comMap.scrollWheelZoom.disable(); });
+  $('com-den').addEventListener('change',aplicarCamadas); $('com-dem').addEventListener('change',aplicarCamadas);
+  $('com-refresh').addEventListener('click',carregarComunidade);
+  watchSize(comMap); carregarComunidade();
+}
+
+
+/* ---------- movimento: revelação única por rolagem e seletor de paleta ---------- */
+window.addEventListener('load',function(){
+  var btns=document.querySelectorAll('.paleta button'), atual=document.documentElement.getAttribute('data-tema')||'terra';
+  btns.forEach(function(b){ b.setAttribute('aria-pressed',b.dataset.t===atual?'true':'false'); b.addEventListener('click',function(){ try{ localStorage.setItem('tema',b.dataset.t); }catch(e){} document.documentElement.setAttribute('data-tema',b.dataset.t); location.reload(); }); });
+  if(!window.IntersectionObserver||matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var sel='.prob-card,.guia-card,.anat-card,.metric-card,.info-card,.dados-form,.ideal-wrap,.im-stat,.map-shell,.com-bar,#com-map,.chat-window,.ia-tip,.section-title,.section-body';
+  var io=new IntersectionObserver(function(en){ en.forEach(function(x){ if(!x.isIntersecting) return; var e=x.target; e.classList.add('in'); io.unobserve(e); setTimeout(function(){ e.classList.remove('rv','in'); e.style.removeProperty('--i'); },1600); }); },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  [].slice.call(document.querySelectorAll(sel)).forEach(function(e){
+    if(e.closest('#hero')||e.getBoundingClientRect().top<innerHeight*.9) return;
+    var irmaos=[].filter.call(e.parentNode.children,function(c){ return c.matches(sel); });
+    e.style.setProperty('--i',Math.min(irmaos.indexOf(e),6)); e.classList.add('rv'); io.observe(e);
+  });
+});
+/* ---------- chat IA ---------- */
+var SYSTEM_PROMPT = 'Você é o assistente do Re.Ciclo, plataforma de georreferenciamento de resíduos inservíveis em Maringá-PR.\n\n'+
+'CONTEXTO sobre Maringá (confirme sempre as regras atuais com a Prefeitura):\n'+
+'- Há pontos de entrega fixos, principalmente para sucata eletrônica (ex.: Paço Municipal, Câmara Municipal, Tiro de Guerra, 4º BPM), vidro, óleo, lâmpadas e pilhas; a rede se concentra perto do centro\n'+
+'- Para móveis e colchões, as opções divulgadas são a Pedreira Municipal e a coleta de itens grandes solicitada pelo 156\n'+
+'- O primeiro ecoponto fixo para inservíveis (Jardim Piatã) teve o recebimento suspenso após um incêndio; o status atual deve ser confirmado\n'+
+'- A cidade gera ~2.853 toneladas de resíduos/dia, com ~4% reciclados (PMGIRSU 2017)\n'+
+'- Entulho de construção segue legislação própria (CONAMA 307) e não é foco da plataforma\n\n'+
+'Seu papel:\n- Orientar sobre descarte correto de inservíveis, priorizando reaproveitamento e economia circular\n'+
+'- Quando não houver solução local, orientar o registro de demanda na plataforma\n'+
+'- Nunca inventar endereços ou horários; se não souber, indique o 156 ou a Secretaria de Meio Ambiente\n'+
+'- Ser direto, acolhedor e contextualizado em Maringá\n\nResponda em português, de forma concisa (máximo 3 parágrafos).';
+var chatHistory=[];
+function appendMsg(role,text){
+  var msgs=$('chat-messages'), div=document.createElement('div'); div.className='msg '+role;
+  div.innerHTML='<div class="msg-avatar">'+(role==='bot'?'R':'EU')+'</div><div class="msg-bubble">'+esc(text).replace(/\n/g,'<br>')+'</div>';
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight; return div;
+}
+async function sendMessage(){
+  var input=$('chat-input'), msg=input.value.trim(); if(!msg) return;
+  input.value=''; appendMsg('user',msg); chatHistory.push({role:'user',content:msg});
+  var typing=appendMsg('bot','...'); typing.querySelector('.msg-bubble').style.opacity='.5';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYSTEM_PROMPT,messages:chatHistory})});
+    var data=await res.json();
+    var reply=(data.content||[]).map(function(i){return i.type==='text'?i.text:'';}).join('')||'Desculpe, não consegui responder agora.';
+    typing.remove(); appendMsg('bot',reply); chatHistory.push({role:'assistant',content:reply});
+  }catch(e){ typing.remove(); appendMsg('bot','Erro de conexão. Tente novamente em instantes.'); }
+}
+function sendChip(chip){ $('chat-input').value=chip.textContent; sendMessage(); }
+
+/* ═══════════════════════════════════════════════════════════════
+   PARTE 2 — MAPAS (Leaflet, com plano B se a biblioteca falhar)
+═══════════════════════════════════════════════════════════════ */
+var VOYAGER='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
+var DARK='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+var SAT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+var SAT_LABELS='https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+var OSM='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+var ATTR_C='Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors';
+var ATTR_O='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+var ATTR_E='Tiles © Esri — Maxar, Earthstar Geographics';
+var FAIL_MSG='Não foi possível carregar o mapa (verifique a conexão ou tente recarregar). A lista e o botão "Como chegar" de cada ponto continuam funcionando.';
+
+function mapFail(id){ var el=$(id); if(el) el.innerHTML='<div class="map-fail">'+FAIL_MSG+'</div>'; }
+function loadScript(src){ return new Promise(function(res,rej){ var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+function loadCss(href){ var l=document.createElement('link'); l.rel='stylesheet'; l.href=href; document.head.appendChild(l); }
+function leafletCssOk(){
+  var d=document.createElement('div'); d.className='leaflet-pane'; d.style.visibility='hidden'; document.body.appendChild(d);
+  var ok=getComputedStyle(d).position==='absolute'; document.body.removeChild(d); return ok;
+}
+async function ensureLeaflet(){
+  if(!window.L){
+    var srcs=['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
+    for(var i=0;i<srcs.length;i++){ try{ await loadScript(srcs[i]); }catch(e){} if(window.L) break; }
+  }
+  if(!window.L) return false;
+  if(!leafletCssOk()){
+    loadCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');
+    loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+    await new Promise(function(r){ setTimeout(r,700); });
+  }
+  return true;
+}
+function smartTiles(url,attr,map){
+  var layer=L.tileLayer(url,{maxZoom:19,attribution:attr}), errs=0, done=false;
+  layer.on('tileerror',function(){
+    if(done) return; errs++;
+    if(errs>=6){ done=true; if(map.hasLayer(layer)) map.removeLayer(layer); L.tileLayer(OSM,{maxZoom:19,attribution:ATTR_O}).addTo(map).bringToBack(); }
+  });
+  return layer;
+}
+function watchSize(map){
+  if(!window.ResizeObserver) return;
+  try{ new ResizeObserver(function(){ map.invalidateSize(); }).observe(map.getContainer()); }catch(e){}
+}
+function pinIcon(p,pulse){
+  return L.divIcon({className:'pin-wrap',
+    html:'<div class="pin">'+(pulse?'<i class="pin-pulse"></i>':'')+'<b class="pin-body"></b><span class="pin-ico">'+p.ico+'</span></div>',
+    iconSize:[34,44],iconAnchor:[17,40],popupAnchor:[0,-36]});
+}
+function pevBounds(){ return L.latLngBounds(PEVS.map(function(p){return [p.lat,p.lng];})); }
+
+function initHero(){
+  $('hero-map').innerHTML='';
+  heroMap=L.map('hero-map',{zoomControl:false,scrollWheelZoom:false,attributionControl:false}).setView(CENTER,13);
+  var heroSat=L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}), heroErr=0;
+  heroSat.on('tileerror',function(){ if(++heroErr===6){ heroMap.removeLayer(heroSat); L.tileLayer(OSM,{maxZoom:19,attribution:ATTR_O}).addTo(heroMap).bringToBack(); } });
+  heroSat.addTo(heroMap);
+  L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9}).addTo(heroMap);
+  L.control.attribution({prefix:false,position:'bottomright'}).addTo(heroMap);
+  PEVS.forEach(function(p){ heroMarkers[p.id]=L.marker([p.lat,p.lng],{icon:pinIcon(p,true)}).addTo(heroMap).bindPopup(popupHtml(p)); });
+  heroMap.fitBounds(pevBounds(),{padding:[60,60],maxZoom:14});
+  watchSize(heroMap);
+  setTimeout(function(){ heroMap.invalidateSize(); heroMap.fitBounds(pevBounds(),{padding:[60,60],maxZoom:14}); },900);
+}
+function initMain(){
+  $('main-map').innerHTML='';
+  mainMap=L.map('main-map',{zoomControl:false,scrollWheelZoom:false}).setView(CENTER,13);
+  var baseMapa=smartTiles(VOYAGER,ATTR_C,mainMap), baseSat=L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}), baseDark=smartTiles(DARK,ATTR_C,mainMap); baseDark.options.maxNativeZoom=16;
+  baseMapa.addTo(mainMap);
+  var bases={}; bases['🗺️ Mapa']=baseMapa; bases['🛰️ Satélite']=baseSat; bases['🌙 Escuro']=baseDark;
+  var rotulos=L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9});
+  var Seletor=L.Control.extend({
+    options:{position:'topright'},
+    onAdd:function(){
+      var box=L.DomUtil.create('div','base-switch'); box.setAttribute('role','group'); box.setAttribute('aria-label','Tipo de mapa');
+      L.DomEvent.disableClickPropagation(box);
+      [['Mapa',baseMapa],['Satélite',baseSat],['Escuro',baseDark]].forEach(function(x,i){
+        var b=L.DomUtil.create('button','',box); b.type='button'; b.textContent=x[0]; b.setAttribute('aria-pressed',i===0?'true':'false');
+        b.addEventListener('click',function(){
+          [baseMapa,baseSat,baseDark,rotulos].forEach(function(l){ if(mainMap.hasLayer(l)) mainMap.removeLayer(l); });
+          x[1].addTo(mainMap); x[1].bringToBack(); if(x[1]===baseSat) rotulos.addTo(mainMap);
+          Array.prototype.forEach.call(box.querySelectorAll('button'),function(o){ o.setAttribute('aria-pressed',o===b?'true':'false'); });
+        });
+      });
+      return box;
+    }
+  });
+  mainMap.addControl(new Seletor());
+  L.control.zoom({position:'bottomright'}).addTo(mainMap);
+  L.control.scale({imperial:false,position:'bottomleft'}).addTo(mainMap);
+  mainMap.on('focus',function(){ mainMap.scrollWheelZoom.enable(); });
+  mainMap.on('blur',function(){ mainMap.scrollWheelZoom.disable(); });
+  covLayer=L.layerGroup();
+  PEVS.forEach(function(p){
+    var m=L.marker([p.lat,p.lng],{icon:pinIcon(p,false)}).bindPopup(popupHtml(p),{maxWidth:280});
+    m.on('click',function(){ selectPEV(p.id,false); });
+    mainMarkers[p.id]=m;
+  });
+  mainMap.fitBounds(pevBounds(),{padding:[50,50],maxZoom:14});
+  applyFilter();
+  if($('toggle-cov').checked) toggleCov(true);
+  watchSize(mainMap);
+}
+
+/* Ajuste de posição pelo endereço (Nominatim/OSM) — falha silenciosa se não houver rede */
+function movePin(p){
+  if(heroMarkers[p.id]) heroMarkers[p.id].setLatLng([p.lat,p.lng]).setPopupContent(popupHtml(p));
+  if(mainMarkers[p.id]) mainMarkers[p.id].setLatLng([p.lat,p.lng]).setPopupContent(popupHtml(p));
+  if(mainMap && covLayer && mainMap.hasLayer(covLayer)) buildCov();
+  onPevsMoved();
+}
+async function geocode(q){
+  var u='https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&bounded=1&viewbox=-52.06,-23.32,-51.80,-23.53&q='+encodeURIComponent(q);
+  var r=await fetch(u,{headers:{'Accept':'application/json'}});
+  if(!r.ok) throw new Error('http '+r.status);
+  var j=await r.json();
+  if(!j.length) return null;
+  var pt=[parseFloat(j[0].lat),parseFloat(j[0].lon)];
+  return dist(pt,CENTER)<9000 ? pt : null;
+}
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+async function refinePositions(){
+  for(var i=0;i<PEVS.length;i++){
+    var p=PEVS[i];
+    try{
+      var pt=await geocode(p.q), prec='end';
+      if(!pt){ await sleep(1100); pt=await geocode(p.qs); prec='rua'; }
+      if(pt){ p.lat=pt[0]; p.lng=pt[1]; p.prec=prec; movePin(p); }
+    }catch(e){ return; }
+    await sleep(1100);
+  }
+  if(heroMap){ try{ heroMap.fitBounds(pevBounds(),{padding:[60,60],maxZoom:14}); }catch(e){} }
+}
+
+/* ---------- MODELO IDEAL (sobre mapa real) ---------- */
+function initIdeal(){
+  $('ideal-map').innerHTML='';
+  var LAT0=CENTER[0], LNG0=CENTER[1];
+  var mLat=110574, mLng=111320*Math.cos(LAT0*Math.PI/180);
+  function toLL(x,y){ return [LAT0+y/mLat, LNG0+x/mLng]; }
+  function toXY(ll){ return [(ll[1]-LNG0)*mLng,(ll[0]-LAT0)*mLat]; }
+  var A=6500, B=5800;
+  function inEll(x,y){ return (x/A)*(x/A)+(y/B)*(y/B)<=1; }
+
+  var map=L.map('ideal-map',{zoomControl:false,scrollWheelZoom:false}).setView(CENTER,13);
+  idealMapRef=map;
+  var idSat=L.tileLayer(SAT,{maxZoom:19,attribution:ATTR_E}), idErr=0;
+  idSat.on('tileerror',function(){ if(++idErr===6){ map.removeLayer(idSat); L.tileLayer(OSM,{maxZoom:19,attribution:ATTR_O}).addTo(map).bringToBack(); } });
+  idSat.addTo(map);
+  L.tileLayer(SAT_LABELS,{maxZoom:19,opacity:.9}).addTo(map);
+  L.control.zoom({position:'bottomright'}).addTo(map);
+  L.control.scale({imperial:false,position:'bottomleft'}).addTo(map);
+  map.on('focus',function(){ map.scrollWheelZoom.enable(); });
+  map.on('blur',function(){ map.scrollWheelZoom.disable(); });
+
+  var ring=[]; for(var i=0;i<72;i++){ var a=i/72*2*Math.PI; ring.push(toLL(A*Math.cos(a),B*Math.sin(a))); }
+  var outline=L.polygon(ring,{color:'#ffffff',weight:2.5,dashArray:'6 6',fillOpacity:0,interactive:false}).addTo(map);
+  function fit(){ map.invalidateSize(); map.fitBounds(outline.getBounds(),{padding:[10,10]}); }
+  setTimeout(fit,300);
+  watchSize(map);
+
+  var r0=rng(42);
+  function gauss(){ var u=0,v=0; while(!u)u=r0(); while(!v)v=r0(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  var dots=[];
+  while(dots.length<700){
+    var x,y;
+    if(r0()<0.65){ x=gauss()*2800; y=gauss()*2600; } else { x=(r0()*2-1)*A; y=(r0()*2-1)*B; }
+    if(inEll(x,y)) dots.push({x:x,y:y,ll:toLL(x,y)});
+  }
+  var canvas=L.canvas({padding:.5});
+  var dotLayer=L.layerGroup().addTo(map);
+  dots.forEach(function(d){ d.mk=L.circleMarker(d.ll,{renderer:canvas,radius:3,weight:.8,color:'#fff',opacity:.85,fillColor:'#ff6a4d',fillOpacity:.95,interactive:false}).addTo(dotLayer); });
+  var covGroup=L.layerGroup().addTo(map), pevGroup=L.layerGroup().addTo(map);
+
+  var cache={};
+  function kmeans(k){
+    if(cache[k]) return cache[k];
+    var rnd=rng(7+k), first=dots[Math.floor(rnd()*dots.length)];
+    var c=[{x:first.x,y:first.y}];
+    while(c.length<k){
+      var d2=dots.map(function(d){ var m=Infinity; c.forEach(function(p){ var q=(d.x-p.x)*(d.x-p.x)+(d.y-p.y)*(d.y-p.y); if(q<m)m=q; }); return m; });
+      var sum=d2.reduce(function(a,b){return a+b;},0), t=rnd()*sum, j=0;
+      for(;j<d2.length-1;j++){ t-=d2[j]; if(t<=0)break; }
+      c.push({x:dots[j].x,y:dots[j].y});
+    }
+    for(var it=0;it<15;it++){
+      var acc=c.map(function(){return {x:0,y:0,n:0};});
+      dots.forEach(function(d){
+        var b=0,bd=Infinity; c.forEach(function(p,ix){ var q=(d.x-p.x)*(d.x-p.x)+(d.y-p.y)*(d.y-p.y); if(q<bd){bd=q;b=ix;} });
+        acc[b].x+=d.x; acc[b].y+=d.y; acc[b].n++;
+      });
+      c=c.map(function(p,ix){ return acc[ix].n?{x:acc[ix].x/acc[ix].n,y:acc[ix].y/acc[ix].n}:p; });
+    }
+    cache[k]=c.map(function(p){ return {x:p.x,y:p.y,ll:toLL(p.x,p.y)}; });
+    return cache[k];
+  }
+
+  var st={mode:'atual',radius:1500,hab:25000,cov:true,dots:true,custom:[]};
+  function getP(){
+    if(st.mode==='atual') return PEVS.map(function(p){ var xy=toXY([p.lat,p.lng]); return {x:xy[0],y:xy[1],ll:[p.lat,p.lng]}; });
+    if(st.mode==='ideal') return kmeans(Math.max(1,Math.round(POP/st.hab)));
+    return st.custom;
+  }
+  function numIcon(label,atual){ return L.divIcon({className:'num-pin'+(atual?' atual':''),html:'<span>'+label+'</span>',iconSize:[28,28],iconAnchor:[14,14]}); }
+  function kmTxt(m){ return (m/1000).toFixed(1).replace('.',',')+' km'; }
+
+  function render(){
+    var P=getP(), R=st.radius, atual=st.mode==='atual', cov=0, sum=0;
+    dots.forEach(function(d){
+      var m=Infinity; for(var i=0;i<P.length;i++){ var q=Math.hypot(d.x-P[i].x,d.y-P[i].y); if(q<m)m=q; }
+      d.m=m; if(m<=R)cov++; if(isFinite(m))sum+=m;
+      d.mk.setStyle({fillColor:m<=R?'#63e04a':'#ff6a4d'});
+    });
+    var pct=Math.round(cov/dots.length*100), avg=P.length?sum/dots.length:null;
+
+    if(st.dots){ if(!map.hasLayer(dotLayer)) dotLayer.addTo(map); } else map.removeLayer(dotLayer);
+    covGroup.clearLayers(); pevGroup.clearLayers();
+    P.forEach(function(p,i){
+      if(st.cov) L.circle(p.ll,{radius:R,color:atual?'#ffd27a':TEMA.lime,weight:1.5,opacity:.9,fillColor:atual?'#e0a24a':TEMA.lime,fillOpacity:.18,interactive:false}).addTo(covGroup);
+      var mk=L.marker(p.ll,{icon:numIcon(atual?'E':(i+1),atual),draggable:st.mode==='custom',keyboard:false}).addTo(pevGroup);
+      if(atual) mk.bindTooltip(PEVS[i].nome);
+      if(st.mode==='custom'){
+        mk.on('click',function(){ st.custom.splice(i,1); render(); });
+        mk.on('dragend',function(e){ var ll=e.target.getLatLng(), xy=toXY([ll.lat,ll.lng]); st.custom[i]={x:xy[0],y:xy[1],ll:[ll.lat,ll.lng]}; render(); });
+      }
+    });
+
+    var n=P.length;
+    $('im-l1').textContent = atual?'Pontos de sucata eletrônica':'PEVs p/ inservíveis';
+    $('im-l2').textContent = atual?'Atendida (só eletrônicos)':'População atendida';
+    $('im-pevs').textContent=n;
+    $('im-cov').textContent=pct+'%';
+    $('im-bar-fill').style.width=pct+'%';
+    $('im-bar-fill').style.background=pct>=80?TEMA.moss:(pct>=50?'#c4874a':'#d94f3d');
+    $('im-dist').textContent=avg===null?'sem PEV':kmTxt(avg);
+    $('im-hab').textContent=n?fmt(Math.round(POP/n)):'—';
+
+    var msg;
+    if(atual){
+      msg='Hoje há <b>'+n+' pontos fixos de sucata eletrônica</b> mapeados, concentrados perto do centro: só <b>'+pct+'%</b> da população simulada mora a até '+kmTxt(R)+' de um deles. Para móveis e colchões, as opções divulgadas são a Pedreira Municipal e a coleta pelo 156.';
+    } else if(st.mode==='ideal'){
+      msg='Com <b>'+n+' PEVs</b> (1 a cada '+fmt(st.hab)+' hab.) e raio de '+kmTxt(R)+', cerca de <b>'+pct+'%</b> da população teria um ponto por perto.'+(pct<80?' Aumente o raio ou reduza os habitantes por PEV para melhorar.':' Uma boa cobertura!');
+    } else {
+      msg=n===0?'Clique no mapa, dentro da linha tracejada, para posicionar PEVs. Arraste para mover e clique em um ponto para removê-lo.'
+        :'Sua rede tem <b>'+n+' PEV'+(n>1?'s':'')+'</b> e atende cerca de <b>'+pct+'%</b> da população simulada. Arraste para mover; clique em um ponto para removê-lo.';
+    }
+    $('im-msg').innerHTML=msg;
+  }
+
+  function setMode(m){
+    st.mode=m;
+    document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.toggle('active',b.getAttribute('data-mode')===m); });
+    $('im-hab-ctrl').style.display=m==='ideal'?'block':'none';
+    $('im-clear').style.display=m==='custom'?'inline-block':'none';
+    map.getContainer().style.cursor=m==='custom'?'crosshair':'';
+    render();
+  }
+  document.querySelectorAll('.mode-btn').forEach(function(b){ b.addEventListener('click',function(){ setMode(b.getAttribute('data-mode')); }); });
+  $('im-radius').addEventListener('input',function(e){ st.radius=+e.target.value; $('im-radius-val').textContent=fmt(st.radius)+' m'; render(); });
+  $('im-habrange').addEventListener('input',function(e){ st.hab=+e.target.value; $('im-habrange-val').textContent=fmt(st.hab); render(); });
+  $('im-showcov').addEventListener('change',function(e){ st.cov=e.target.checked; render(); });
+  $('im-showdots').addEventListener('change',function(e){ st.dots=e.target.checked; render(); });
+  $('im-clear').addEventListener('click',function(){ st.custom=[]; render(); });
+  map.on('click',function(e){
+    if(st.mode!=='custom') return;
+    var xy=toXY([e.latlng.lat,e.latlng.lng]);
+    if(!inEll(xy[0],xy[1])){ showToast('⚠️ Clique dentro da área tracejada'); return; }
+    if(st.custom.length>=60){ showToast('⚠️ Máximo de 60 pontos no modelo'); return; }
+    st.custom.push({x:xy[0],y:xy[1],ll:[e.latlng.lat,e.latlng.lng]});
+    render();
+  });
+  onPevsMoved=function(){ if(st.mode==='atual') render(); };
+  render();
+}
+
+async function initMaps(){
+  var ok=false;
+  try{ ok=await ensureLeaflet(); }catch(e){ ok=false; }
+  if(!ok){ ['hero-map','main-map','ideal-map','com-map'].forEach(mapFail); $('im-msg').textContent='O mapa não carregou, então a simulação está indisponível.'; return; }
+  try{ initHero(); }catch(e){ console.error('hero',e); mapFail('hero-map'); }
+  try{ initMain(); }catch(e){ console.error('main',e); mapFail('main-map'); }
+  try{ initIdeal(); }catch(e){ console.error('ideal',e); mapFail('ideal-map'); $('im-msg').textContent='Não foi possível iniciar a simulação.'; }
+  try{ initCom(); }catch(e){ console.error('com',e); mapFail('com-map'); }
+  setTimeout(function(){ [heroMap,mainMap,idealMapRef,comMap].forEach(function(m){ if(m) m.invalidateSize(); }); },400);
+  refinePositions();
+}
+
+/* ═══════════ INICIALIZAÇÃO ═══════════ */
+$('search-input').addEventListener('input',function(){ renderPEVList(); applyFilter(); });
+$('toggle-cov').addEventListener('change',function(e){ toggleCov(e.target.checked); });
+renderPEVList();
+updateStats();
+carregarContagens();
+initNavSpy();
+initMaps();
+</script>
+<script>
+(function(){
+var calmo=matchMedia('(prefers-reduced-motion:reduce)').matches,ign=false,fio=null,fioBr=null,ond=null,orig=null,luz=null,hud=null,intro=false,_sel=window.selectPEV,_flt=window.applyFilter;
+function ll(p){return [p.lat,p.lng]}
+function pev(id){return PEVS.filter(function(x){return x.id===id})[0]}
+function visiveis(){return PEVS.filter(function(p){return mainMarkers[p.id]&&mainMap.hasLayer(mainMarkers[p.id])})}
+function onda(pt,infinita){var m=L.marker(pt,{interactive:false,keyboard:false,zIndexOffset:-900,icon:L.divIcon({className:'onda',html:'<i></i><i></i><i></i>',iconSize:[0,0]})}).addTo(mainMap);if(!infinita)setTimeout(function(){mainMap.removeLayer(m)},3800);return m}
+function curva(a,b){var n=56,r=[],dx=b[1]-a[1],dy=b[0]-a[0],cx=(a[0]+b[0])/2-dx*.3,cy=(a[1]+b[1])/2+dy*.3;for(var i=0;i<=n;i++){var t=i/n,u=1-t;r.push([u*u*a[0]+2*u*t*cx+t*t*b[0],u*u*a[1]+2*u*t*cy+t*t*b[1]])}return r}
+function limpa(){[fio,fioBr,ond,orig].forEach(function(l){if(l)mainMap.removeLayer(l)});fio=fioBr=ond=orig=null;if(luz)luz.classList.remove('on')}
+function foco(pt){if(!luz)return;var q=mainMap.latLngToContainerPoint(pt);luz.style.setProperty('--fx',q.x+'px');luz.style.setProperty('--fy',q.y+'px')}
+function hudAtualiza(){if(!hud)return;var v=visiveis(),b=mainMap.getBounds(),na=v.filter(function(p){return b.contains(ll(p))}).length;hud.querySelector('#hud-n').textContent=v.length;hud.querySelector('#hud-s').textContent=na+' na vista · toque num ponto para traçar o caminho'}
+function destacar(id,voar){
+  var p=pev(id);if(!p||!mainMarkers[id])return;limpa();
+  var alvo=ll(p),us=window.userMarker&&mainMap.hasLayer(userMarker)?userMarker.getLatLng():null,o=us?[us.lat,us.lng]:CENTER;
+  var perto=Math.abs(o[0]-alvo[0])<.2&&Math.abs(o[1]-alvo[1])<.2;
+  var pts=perto?curva(o,alvo):[alvo,alvo];
+  ond=onda(alvo,true);
+  if(perto){orig=L.circleMarker(o,{radius:6,color:'#fff',weight:3,fillColor:TEMA.moss,fillOpacity:1,interactive:false}).addTo(mainMap)}
+  var m=mainMarkers[id];
+  if(voar){setTimeout(function(){ign=true;m.closePopup();ign=false},20);perto?mainMap.flyToBounds([o,alvo],{padding:[110,110],maxZoom:16,duration:calmo?0:1.2}):mainMap.flyTo(alvo,16,{duration:.9});mainMap.once('moveend',function(){m.openPopup()})}
+  foco(alvo);if(luz)luz.classList.add('on');
+  if(!perto)return;
+  fioBr=L.polyline([],{color:TEMA.lime,weight:10,opacity:.22,interactive:false,className:'fio-brilho'}).addTo(mainMap);
+  fio=L.polyline([],{color:TEMA.lime,weight:3.5,opacity:1,interactive:false,lineCap:'round',className:'fio'}).addTo(mainMap);
+  var k=0,f1=fio,f2=fioBr;(function passo(){if(fio!==f1)return;k+=calmo?pts.length:2;var s=pts.slice(0,Math.min(k,pts.length));f1.setLatLngs(s);f2.setLatLngs(s);if(k<pts.length)requestAnimationFrame(passo)})();
+}
+window.selectPEV=function(id,fly){_sel(id,false);destacar(id,fly)};
+window.applyFilter=function(){_flt.apply(this,arguments);limpa();hudAtualiza()};
+function quente(id,on){var c=document.querySelector('.pev-card[data-id="'+id+'"]');if(c)c.classList.toggle('hot',on);var m=mainMarkers[id],e=m&&m.getElement&&m.getElement(),pin=e&&e.querySelector('.pin');if(pin){pin.classList.toggle('quente',on)}}
+function init(){
+  var c=mainMap.getContainer();
+  luz=document.createElement('div');luz.className='mapa-luz';c.appendChild(luz);
+  hud=document.createElement('div');hud.className='mapa-hud';hud.innerHTML='<span class="hud-dot"></span><div><b id="hud-n">0</b> <span>pontos de descarte</span><small id="hud-s"></small></div>';c.appendChild(hud);
+  mainMap.on('move zoom',function(){if(ond)foco(ond.getLatLng())});
+  mainMap.on('moveend',hudAtualiza);
+  mainMap.on('popupclose',function(){if(!ign)limpa()});
+  PEVS.forEach(function(p){var m=mainMarkers[p.id];if(!m)return;m.on('mouseover',function(){quente(p.id,true)});m.on('mouseout',function(){quente(p.id,false)})});
+  document.addEventListener('mouseover',function(e){var c=e.target.closest&&e.target.closest('.pev-card');if(c&&c.dataset.id&&!c.classList.contains('hot')){var id=c.dataset.id;quente(id,true);var p=pev(id);if(p&&mainMarkers[id]&&mainMap.hasLayer(mainMarkers[id]))onda(ll(p))}});
+  document.addEventListener('mouseout',function(e){var c=e.target.closest&&e.target.closest('.pev-card');if(c&&c.dataset.id)quente(c.dataset.id,false)});
+  hudAtualiza();
+  if(calmo)return;
+  var pins=visiveis().map(function(p){var e=mainMarkers[p.id].getElement();return e&&e.querySelector('.pin')}).filter(Boolean);
+  pins.forEach(function(e){e.style.opacity=0});
+  var go=function(){if(intro)return;intro=true;var n=pins.length,t0=performance.now();
+    mainMap.setView(CENTER,11,{animate:false});
+    setTimeout(function(){mainMap.flyToBounds(pevBounds(),{padding:[50,50],maxZoom:14,duration:2.6})},350);
+    pins.forEach(function(e,i){setTimeout(function(){e.style.opacity='';e.classList.add('cai');var p=visiveis()[i];if(p)onda(ll(p))},1900+i*170)});
+    (function cont(){var t=Math.min((performance.now()-t0)/1800,1);hud.querySelector('#hud-n').textContent=Math.round(n*t);if(t<1)requestAnimationFrame(cont);else hudAtualiza()})()};
+  if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){io.disconnect();go()}},{threshold:.45});io.observe(c)}else go();
+  setTimeout(function(){pins.forEach(function(e){e.style.opacity=''})},30000);
+}
+var iv=setInterval(function(){if(window.mainMap&&window.PEVS&&window.mainMarkers&&Object.keys(mainMarkers).length&&mainMap.getContainer()){clearInterval(iv);init()}},400);
+})();
+</script>
+<script>
+(function(){var h=new Date().getHours(),d=document.documentElement;d.dataset.tempo=h<6||h>=19?'noite':h<12?'manha':h<17?'tarde':'entardecer';
+var b=document.createElement('div');b.id='prog';document.body.appendChild(b);
+addEventListener('scroll',function(){var m=d.scrollHeight-d.clientHeight;b.style.width=(m>0?d.scrollTop/m*100:0)+'%'},{passive:true});})();
+</script>
+</body>
+</html>
